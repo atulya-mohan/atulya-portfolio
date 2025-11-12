@@ -1,26 +1,45 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --background: #F0F2E6;
+  --foreground: #1a1a1a;
+  --font-header: 'Chakra Petch', sans-serif;
+  --font-sans: 'Space Grotesk', sans-serif;
+  --font-mono: 'IBM Plex Mono', monospace;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+}
+
+.font-header { font-family: var(--font-header); }
+.font-sans { font-family: var(--font-sans); }
+.font-mono { font-family: var(--font-mono); }
+.font-body { font-family: 'IBM Plex Sans', sans-serif; }
+
+/* ==== Glass scrollbars (use class="scrollbar-glass") ==== */
+/* ... your scrollbar styles remain unchanged ... */
+.scrollbar-glass{ scrollbar-width:thin; scrollbar-color:rgba(255,255,255,.28) transparent; }
+.scrollbar-glass::-webkit-scrollbar{ height:8px; width:8px; }
+.scrollbar-glass::-webkit-scrollbar-track{ background:transparent; }
+.scrollbar-glass::-webkit-scrollbar-thumb{
+  background:linear-gradient(180deg,rgba(255,255,255,.32),rgba(255,255,255,.18));
+  border:1px solid rgba(255,255,255,.25);
+  border-radius:9999px; box-shadow:0 1px 8px rgba(0,0,0,.35);
+}
+.scrollbar-glass::-webkit-scrollbar-thumb:hover{ background:rgba(255,255,255,.42); }
+
+/* ==== New Utility for Diagonal Corners ==== */
+.cut-corners {
+  --corner-cut: 8px; /* Adjust the size of the cut here */
+  clip-path: polygon(
+    0% 0%, /* top left */
+    calc(100% - var(--corner-cut)) 0%, /* top right start cut */
+    100% var(--corner-cut), /* top right end cut */
+    100% 100%, /* bottom right */
+    var(--corner-cut) 100%, /* bottom left start cut */
+    0% calc(100% - var(--corner-cut)) /* bottom left end cut */
+  );
 }

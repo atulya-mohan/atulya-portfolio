@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState, useEffect } from "react"; // 👈 Hooks are here
 import { ChevronLeft, ChevronRight, ArrowUpRight } from "lucide-react";
 
 type Item = {
@@ -33,11 +33,23 @@ export default function MEProjectsCard({
   thumbH?: number;
   thumbHMd?: number;
 }) {
+  // 👇 --- ALL HOOKS MUST BE CALLED AT THE TOP ---
   const n = Math.max(items.length, 1);
   const [i, setI] = useState(0);
   const [imgIdx, setImgIdx] = useState(0);
   
-  // Handle case where items array is empty
+  const others = useMemo(() => {
+    const out: number[] = [];
+    for (let k = 1; k <= Math.min(thumbCount, n - 1); k++) out.push((i + k) % n);
+    return out;
+  }, [i, n, thumbCount]);
+
+  useEffect(() => {
+    setImgIdx(0);
+  }, [i]);
+  // 👆 --- END OF HOOKS ---
+
+  // 👇 --- THE 'if' BLOCK IS NOW MOVED HERE ---
   if (items.length === 0) {
     return (
       <div
@@ -56,15 +68,10 @@ export default function MEProjectsCard({
       </div>
     );
   }
+  // 👆 --- END OF FIX ---
 
   const cur = items[i % n];
   const numImages = cur?.imageUrls?.length || 0;
-
-  const others = useMemo(() => {
-    const out: number[] = [];
-    for (let k = 1; k <= Math.min(thumbCount, n - 1); k++) out.push((i + k) % n);
-    return out;
-  }, [i, n, thumbCount]);
 
   const goProject = (dir: -1 | 1) => () => setI((x) => (x + dir + n) % n);
   
@@ -73,10 +80,6 @@ export default function MEProjectsCard({
       setImgIdx(prev => (prev + dir + numImages) % numImages);
     }
   };
-
-  useEffect(() => {
-    setImgIdx(0);
-  }, [i]);
 
   return (
     <div
@@ -110,18 +113,13 @@ export default function MEProjectsCard({
         {/* LEFT: Description */}
         <div className="flex h-full min-w-0 flex-col border border-black p-4">
           
-          {/* 👇 --- THIS IS THE FIX --- 👇 */}
-          {/* This <p> tag now has a fixed height (h-[7rem]) and all the
-            line-clamp classes, just like your "About Me" box.
-            The flex-1 wrapper was removed.
-          */}
-          <p className="font-body text-sm leading-relaxed text-zinc-800 h-[7rem] overflow-hidden [display:-webkit-box] [-webkit-line-clamp:5] [-webkit-box-orient:vertical]">
-            {cur.summary ??
-              "Brief overview of the selected project goes here. Replace with your real content."}
-          </p>
-          {/* 👆 --- END OF FIX --- 👆 */}
+          <div className="flex-1 min-h-0 overflow-hidden">
+            <p className="font-body text-sm leading-relaxed text-zinc-800 [display:-webkit-box] [-webkit-line-clamp:5] [-webkit-box-orient:vertical]">
+              {cur.summary ??
+                "Brief overview of the selected project goes here. Replace with your real content."}
+            </p>
+          </div>
 
-          {/* This `mt-auto` pushes the buttons to the bottom of the card */}
           <div className="mt-auto flex items-center gap-2 pt-3">
             <button
               onClick={goProject(-1)}

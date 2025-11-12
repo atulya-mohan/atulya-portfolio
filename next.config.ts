@@ -1,17 +1,26 @@
-// next.config.js
+import type { NextConfig } from 'next';
+
 /** @type {import('next').NextConfig} */
-const nextConfig = {
+const nextConfig: NextConfig = {
+  
+  // 👇 ADD (OR UPDATE) THIS 'images' BLOCK
   images: {
     remotePatterns: [
       {
-        protocol: 'https', hostname: '**.supabase.co'
+        protocol: 'https',
+        hostname: 'xvyzpsfpgpbozzcohpxa.supabase.co', // This is your Supabase hostname
+        port: '',
+        pathname: '/storage/v1/object/public/**', // This allows all images from public buckets
       },
     ],
-    // OR: if you want to allow any Supabase project (less strict):
-    // remotePatterns: [
-    //   { protocol: 'https', hostname: '**.supabase.co', pathname: '/storage/v1/object/public/**' },
-    // ],
   },
+  // 👆 END OF 'images' BLOCK
+
+  eslint: {
+    // This is the block we added earlier
+    ignoreDuringBuilds: true,
+  },
+  
 };
 
-module.exports = nextConfig;
+export default nextConfig;

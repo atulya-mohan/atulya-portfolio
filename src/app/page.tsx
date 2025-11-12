@@ -11,8 +11,14 @@ import { getMEProjectsData } from "@/lib/projects/getMEProjectsData";
 import { createClient } from "@supabase/supabase-js";
 
 // --- DATA (Hard-coded items removed) ---
-// const EM_ITEMS = [ ... ];
-// const SD_ITEMS = [ ... ];
+// The hard-coded EM_ITEMS and SD_ITEMS are gone.
+
+// Define the MusicProject type
+type MusicProject = {
+  id: string;
+  title: string;
+  audio_url: string | null;
+};
 
 export default async function Home() {
   const supabase = createClient(
@@ -32,6 +38,21 @@ export default async function Home() {
     title: p.title,
     imageUrl: p.image_url,
   }));
+  
+  // 👇 --- NEW: Fetch Music Project ---
+  const { data: musicData } = await supabase
+    .from('music_projects')
+    .select('id, title, audio_url')
+    .order('sort_index', { ascending: true })
+    .limit(1)
+    .maybeSingle(); // Get just the first one
+  
+  const musicProject: MusicProject | null = musicData ? {
+    id: musicData.id,
+    title: musicData.title,
+    audio_url: musicData.audio_url,
+  } : null;
+  // 👆 --- END NEW MUSIC FETCH ---
 
   // Fetch ME Projects using the same function as the expanded page
   const meProjectsData = await getMEProjectsData();
@@ -48,7 +69,7 @@ export default async function Home() {
     type: p.type,
   }));
 
-  // 👇 --- NEW: Fetch EM Projects ---
+  // 👇 --- Fetch EM Projects ---
   const { data: emProjectsData } = await supabase
     .from('em_projects')
     .select('id, title, cover_image_url')
@@ -61,7 +82,7 @@ export default async function Home() {
     imageUrl: p.cover_image_url,
   }));
 
-  // 👇 --- NEW: Fetch SD Projects ---
+  // 👇 --- Fetch SD Projects ---
   const { data: sdProjectsData } = await supabase
     .from('sd_projects')
     .select('id, title, cover_image_url')
@@ -72,7 +93,6 @@ export default async function Home() {
     href: '/projects/software-design', // Links to your main SD page
     imageUrl: p.cover_image_url,
   }));
-  // 👆 --- END NEW DATA ---
 
   // --- UPDATED: Create a map of skill to color based on skill groups ---
   const skillColorMap: Record<string, string> = {};
@@ -110,7 +130,7 @@ export default async function Home() {
       case 'gamepad2': return Gamepad2;
       case 'plane':    return Plane;
       case 'wrench':   return Wrench;
-      case 'music':
+      case 'music':  // 👈 This was the typo
       default:         return Music;
     }
   };
@@ -181,7 +201,7 @@ export default async function Home() {
                       </div>
                     </div>
                     <div className="min-w-0">
-                      <p className="font-body text-sm leading-relaxed text-zinc-800 h-[var(--about-h,7rem)] overflow-hidden [display:-webkit-box] [-webkit-line-clamp:5] [-webkit-box-orient:vertical]">
+                      <p className="font-body text-sm leading-relaxed text-zinc-800 h-[var(--about-h,7rem)] overflow-hidden [display:-webkit-box] [-webkit-line-clamp:5] [-webkit-box-orient:vertical] whitespace-pre-line">
                         {aboutData.profile.bio || "Bio not available"}
                       </p>
                     </div>
@@ -252,7 +272,9 @@ export default async function Home() {
                 style={{ gap: "var(--gap)", gridTemplateRows: "5fr 2fr" }}
               >
                 <MEProjectsCard items={meProjects} />
-                <CreativePursuitsCard photos={[{src: '/placeholder.png', alt: 'placeholder'}]} />
+                
+                {/* 👇 --- THIS IS THE FIX --- 👇 */}
+                <CreativePursuitsCard photos={photos} musicProject={musicProject} />
               </section>
 
               {/* ---------- Section 2 (BOTTOM band) ---------- */}

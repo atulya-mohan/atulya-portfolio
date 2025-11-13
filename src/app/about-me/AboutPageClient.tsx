@@ -7,7 +7,7 @@ import Link from 'next/link';
 import { Linkedin, Mail, Music, Camera, Gamepad2, Plane, Wrench, X } from 'lucide-react';
 import TriBandTimeline from '@/components/TriBandTimeline';
 import SkillsAccordion from '@/components/SkillsAccorrdion';
-import type { TimelineSeg, TimelineEducation, TimelineExperience } from '@/lib/about/getAboutData';
+import type { TimelineSeg, TimelineEducation, TimelineExperience } from '@/lib/about/types';
 
 interface AboutPageClientProps {
   aboutData: any;

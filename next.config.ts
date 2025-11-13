@@ -8,12 +8,17 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'xvyzpsfpgpbozzcohpxa.supabase.co', // This is your Supabase hostname
-        port: '',
-        pathname: '/storage/v1/object/public/**', // This allows all images from public buckets
+        hostname: 'xvyzpsfpgpbozzcohpxa.supabase.co',
+        pathname: '/storage/v1/object/public/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'xvyzpsfpgpbozzcohpxa.supabase.co',
+        pathname: '/storage/v1/render/image/public/**', // optional but handy
       },
     ],
   },
+  
   // 👆 END OF 'images' BLOCK
 
   eslint: {

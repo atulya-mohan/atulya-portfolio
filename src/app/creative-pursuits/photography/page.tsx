@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import React, { useState, useEffect, useMemo } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { createClient } from '@supabase/supabase-js';
+import { getSupabaseBrowser } from '@/lib/supabase/browser';
 
 type Photo = {
     id: string;
@@ -12,17 +12,13 @@ type Photo = {
     imageUrl: string;
     year?: string;
     location?: string;
-};
-
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-
-const supabase = supabaseUrl && supabaseAnonKey
-    ? createClient(supabaseUrl, supabaseAnonKey)
-    : null;
+}
 
 async function fetchPhotos(): Promise<Photo[]> {
+    const supabase = getSupabaseBrowser();
+    
     if (!supabase) {
+        console.warn('[PhotographyPage] Supabase client unavailable. Returning empty array.');
         return [];
     }
 

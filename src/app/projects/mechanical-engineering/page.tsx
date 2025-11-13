@@ -3,11 +3,9 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { ChevronLeft, ChevronRight, ArrowUpRight } from 'lucide-react';
-import { useState, useEffect, useRef } from 'react';
-// Restore the import for your actual data fetching function
-import { getMEProjectsData, type MEProject } from '@/lib/projects/getMEProjectsData'; // Ensure this path is correct
-
-export const runtime = 'nodejs';
+import { useState, useEffect } from 'react';
+import { getSupabaseBrowser } from '@/lib/supabase/browser';
+import type { MEProject } from '@/lib/projects/getMEProjectsData';
 
 /* ---------------- component ---------------- */
 
@@ -18,22 +16,79 @@ export default function ExpandedME() {
   const [i, setI] = useState(0);
   const [slide, setSlide] = useState(0);
 
-  // Restore the useEffect for data fetching
+  // Fetch projects using browser Supabase client
   useEffect(() => {
     const fetchProjects = async () => {
-      setLoading(true); // Ensure loading state is true at the start
+      setLoading(true);
+      const supabase = getSupabaseBrowser();
+      
+      if (!supabase) {
+        console.warn('[ExpandedME] Supabase client unavailable. Displaying empty state.');
+        setProjects([]);
+        setLoading(false);
+        return;
+      }
+
       try {
-        const data = await getMEProjectsData();
-        setProjects(data);
+        // Fetch projects
+        const { data: projectsData, error: projectsError } = await supabase
+          .from('me_projects')
+          .select('id, title, role, year, type, blurb, sort_index, cover_image_url')
+          .order('sort_index', { ascending: true });
+
+        if (projectsError) {
+          console.error('Error fetching ME projects:', projectsError);
+          setProjects([]);
+          setLoading(false);
+          return;
+        }
+
+        if (!projectsData?.length) {
+          setProjects([]);
+          setLoading(false);
+          return;
+        }
+
+        // Fetch images for all projects
+        const projectIds = projectsData.map(p => p.id);
+        const { data: imagesData, error: imagesError } = await supabase
+          .from('me_project_images')
+          .select('project_id, image_url, sort_index')
+          .in('project_id', projectIds)
+          .order('sort_index', { ascending: true });
+
+        if (imagesError) {
+          console.error('Error fetching ME project images:', imagesError);
+        }
+
+        // Group images by project
+        const imagesByProject: Record<string, string[]> = {};
+        for (const img of imagesData ?? []) {
+          (imagesByProject[img.project_id] ??= []).push(img.image_url);
+        }
+
+        // Transform to MEProject format
+        const transformedProjects: MEProject[] = projectsData.map(p => ({
+          id: p.id,
+          title: p.title,
+          role: p.role,
+          year: p.year,
+          type: p.type,
+          blurb: p.blurb,
+          images: imagesByProject[p.id] ?? [],
+          coverImageUrl: p.cover_image_url ?? null,
+        }));
+
+        setProjects(transformedProjects);
       } catch (error) {
         console.error('Failed to fetch projects:', error);
-        setProjects([]); // Set to empty array on error
+        setProjects([]);
       } finally {
-        setLoading(false); // Set loading to false after fetch completes or fails
+        setLoading(false);
       }
     };
     fetchProjects();
-  }, []); // Empty dependency array means this runs once on mount
+  }, []);
 
   // Reset slide index when project changes
   useEffect(() => {

@@ -42,8 +42,9 @@ export default function AboutPageClient({ aboutData, skillsGroups, fallbackInter
     }
   };
 
-  const handleSegmentClick = (segment: TimelineSeg) => {
-    setSelectedSegment(segment);
+  const handleSegmentClick = (segment: TimelineSeg | { id?: string; start: string; end?: string | null; label?: string | null; logo_url?: string | null; type?: 'education' | 'experience' | string | null; details?: any }) => {
+    // Cast to TimelineSeg since we know the data structure matches
+    setSelectedSegment(segment as TimelineSeg);
   };
 
   const renderDetailPanel = () => {

@@ -10,6 +10,7 @@ import {
   Cpu,
 } from 'lucide-react';
 import Image from "next/image";
+import type { TimelineSeg } from '@/lib/about/types';
 
 type Seg = {
   id?: string;
@@ -17,7 +18,7 @@ type Seg = {
   end?: string | null;
   label?: string | null;
   logo_url?: string | null;
-  type?: string | null;
+  type?: 'education' | 'experience' | string | null;
   details?: any;
 };
 
@@ -57,7 +58,7 @@ export default function TriBandTimeline({
   rise?: number;
   lineThick?: number;
   iconSize?: number;
-  onSegmentClick?: (segment: Seg) => void; // NEW: Optional click handler
+  onSegmentClick?: (segment: Seg | TimelineSeg) => void; // NEW: Optional click handler
 }) {
   const min = startYear;
   const max = endYear;

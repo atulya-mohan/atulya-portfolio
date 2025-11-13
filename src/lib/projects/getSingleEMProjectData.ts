@@ -35,6 +35,10 @@ export async function getSingleEMProjectData(id: string): Promise<EMProject | nu
     .eq('project_id', id)
     .order('sort_index', { ascending: true });
   
+  if (imagesError) {
+    console.error(`Error fetching images for project ${id}:`, imagesError.message);
+  }
+  
   const mediaUrls = (images ?? [])
     .map((img) => img.image_url)
     .filter(Boolean) as string[];

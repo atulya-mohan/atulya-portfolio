@@ -9,65 +9,43 @@ import TypewriterEffect from "@/components/TypewriterEffect";
 import { getAboutData } from "@/lib/about/getAboutData";
 import { getMEProjectsData } from "@/lib/projects/getMEProjectsData";
 import { createClient } from "@supabase/supabase-js";
-import { supabaseServer } from "@/lib/supabase/server";
 
-export const runtime = "nodejs";
-// export const revalidate = 60; // optional small cache
+// --- DATA (Hard-coded items removed) ---
+// const EM_ITEMS = [ ... ];
+// const SD_ITEMS = [ ... ];
 
 export default async function Home() {
-  // ---- Build a DB client with a safe fallback ----
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  const supabase =
+    supabaseUrl && supabaseAnonKey
+      ? createClient(supabaseUrl, supabaseAnonKey)
+      : null;
 
-  // Prefer server (service role) if available; else fall back to anon client
-  const serverDb = supabaseServer();
-  const db = serverDb ?? (url && anon ? createClient(url, anon) : null);
-
-  if (!db) {
-    console.warn("[Home] No Supabase client available. Using empty placeholders for EM/SD/photos.");
+  if (!supabase) {
+    console.warn('[Home] Missing Supabase environment variables. Falling back to static data.');
   }
 
-  // ---- Fetch core data (About + ME via your working utils) ----
-  const [aboutData, meProjectsData] = await Promise.all([
-    getAboutData(),
-    getMEProjectsData(),
-  ]);
+  const aboutData = await getAboutData();
 
-  // ---- Public reads for mini carousels & creative photos (use db fallback) ----
-  const [photosRows, emRows, sdRows] = await Promise.all([
-    db
-      ?.from("photos")
-      .select("id, title, image_url")
-      .order("sort_index", { ascending: true })
-      .then(({ data }) => data ?? [])
-      .catch(() => [] as any[]),
-    db
-      ?.from("em_projects")
-      .select("id, title, cover_image_url")
-      .eq("confidential", false)
-      .order("sort_index", { ascending: true })
-      .then(({ data }) => data ?? [])
-      .catch(() => [] as any[]),
-    db
-      ?.from("sd_projects")
-      .select("id, title, cover_image_url")
-      .order("sort_index", { ascending: true })
-      .then(({ data }) => data ?? [])
-      .catch(() => [] as any[]),
-  ]);
+  let creativePhotos: { src: string; alt: string }[] = [];
 
-  // ---- Creative pursuits card ----
-  const creativePhotos: { src: string; alt: string }[] =
-    (photosRows || []).map((p: any) => ({
+  if (supabase) {
+    const { data: photosData } = await supabase
+      .from('photos')
+      .select('id, title, image_url')
+      .order('sort_index', { ascending: true });
+
+    creativePhotos = (photosData || []).map((p: any) => ({
       src: p.image_url,
-      alt: p.title ?? "Creative pursuit",
+      alt: p.title ?? 'Creative pursuit',
     }));
-  const creativeCardPhotos =
-    creativePhotos.length > 0
-      ? creativePhotos
-      : [{ src: "/placeholder.png", alt: "Placeholder photo" }];
+  }
 
-  // ---- ME projects preview (unchanged shape for MEProjectsCard) ----
+  // Fetch ME Projects using the same function as the expanded page
+  const meProjectsData = await getMEProjectsData();
+  
+  // Transform the data to match MEProjectsCard component's expected format
   const meProjects = meProjectsData.map((p) => ({
     id: p.id,
     title: p.title,
@@ -79,33 +57,50 @@ export default async function Home() {
     type: p.type,
   }));
 
-  // ---- EM / SD mini carousels (restored) ----
-  const EM_ITEMS: { title: string; href: string; imageUrl: string | null }[] = (emRows || []).map(
-    (p: any) => ({
-      title: p.title,
-      href: "/projects/engineering-management",
-      imageUrl: p.cover_image_url ?? null,
-    })
-  );
+  // 👇 --- NEW: Fetch EM Projects ---
+  let EM_ITEMS: { title: string; href: string; imageUrl: string | null }[] = [];
 
-  const SD_ITEMS: { title: string; href: string; imageUrl: string | null }[] = (sdRows || []).map(
-    (p: any) => ({
-      title: p.title,
-      href: "/projects/software-design",
-      imageUrl: p.cover_image_url ?? null,
-    })
-  );
+  if (supabase) {
+    const { data: emProjectsData } = await supabase
+      .from('em_projects')
+      .select('id, title, cover_image_url')
+      .eq('confidential', false)
+      .order('sort_index', { ascending: true });
 
-  // ---- Skill color mapping for About widgets ----
+    EM_ITEMS = (emProjectsData || []).map((p: any) => ({
+      title: p.title,
+      href: '/projects/engineering-management', // Links to your main EM page
+      imageUrl: p.cover_image_url,
+    }));
+  }
+
+  // 👇 --- NEW: Fetch SD Projects ---
+  let SD_ITEMS: { title: string; href: string; imageUrl: string | null }[] = [];
+
+  if (supabase) {
+    const { data: sdProjectsData } = await supabase
+      .from('sd_projects')
+      .select('id, title, cover_image_url')
+      .order('sort_index', { ascending: true });
+
+    SD_ITEMS = (sdProjectsData || []).map((p: any) => ({
+      title: p.title,
+      href: '/projects/software-design', // Links to your main SD page
+      imageUrl: p.cover_image_url,
+    }));
+  }
+  // 👆 --- END NEW DATA ---
+
+  // --- UPDATED: Create a map of skill to color based on skill groups ---
   const skillColorMap: Record<string, string> = {};
-  aboutData.skills.forEach((group: any) => {
-    const color = group.color || "#FFB3BA";
-    group.skills.forEach((skill: string) => {
+  aboutData.skills.forEach(group => {
+    const color = group.color || '#FFB3BA'; // Default pastel pink
+    group.skills.forEach(skill => {
       skillColorMap[skill] = color;
     });
   });
 
-  // Shuffle helper
+  // Shuffle function using Fisher-Yates algorithm
   const shuffleArray = <T,>(array: T[]): T[] => {
     const shuffled = [...array];
     for (let i = shuffled.length - 1; i > 0; i--) {
@@ -115,36 +110,39 @@ export default async function Home() {
     return shuffled;
   };
 
+  // Flatten all skills with their colors and shuffle
   const allSkillsWithColors = shuffleArray(
-    aboutData.skills.flatMap((group: any) =>
-      group.skills.map((skill: string) => ({ skill, color: group.color || "#FFB3BA" }))
+    aboutData.skills.flatMap(group => 
+      group.skills.map(skill => ({ skill, color: group.color || '#FFB3BA' }))
     )
   );
 
-  const defaultTags = ["Mechanical Design", "Prototyping", "Strategy", "Manufacturing"];
+  // Default tags with their colors from the skill groups
+  const defaultTags = ['Mechanical Design', 'Prototyping', 'Strategy', 'Manufacturing'];
 
+  const creativeCardPhotos =
+    creativePhotos.length > 0
+      ? creativePhotos
+      : [{ src: '/placeholder.png', alt: 'Placeholder photo' }];
+
+  // --- Helper function and fallbacks from about-me page ---
   const toIcon = (name?: string | null) => {
-    switch ((name ?? "").toLowerCase()) {
-      case "camera":
-        return Camera;
-      case "gamepad2":
-        return Gamepad2;
-      case "plane":
-        return Plane;
-      case "wrench":
-        return Wrench;
-      case "music":
-      default:
-        return Music;
+    switch ((name ?? '').toLowerCase()) {
+      case 'camera':   return Camera;
+      case 'gamepad2': return Gamepad2;
+      case 'plane':    return Plane;
+      case 'wrench':   return Wrench;
+      case 'music':
+      default:         return Music;
     }
   };
 
   const fallbackInterests = [
-    { label: "Music", icon_name: "Music", color: "#FFB3BA" },
-    { label: "Camera", icon_name: "Camera", color: "#BAFFC9" },
-    { label: "Gaming", icon_name: "Gamepad2", color: "#BAE1FF" },
-    { label: "Travel", icon_name: "Plane", color: "#FFFFBA" },
-    { label: "Tools", icon_name: "Wrench", color: "#E0BBE4" },
+    { label: 'Music',   icon_name: 'Music', color: '#FFB3BA' },
+    { label: 'Camera',  icon_name: 'Camera', color: '#BAFFC9' },
+    { label: 'Gaming',  icon_name: 'Gamepad2', color: '#BAE1FF' },
+    { label: 'Travel',  icon_name: 'Plane', color: '#FFFFBA' },
+    { label: 'Tools',   icon_name: 'Wrench', color: '#E0BBE4' },
   ];
 
   return (
@@ -161,10 +159,7 @@ export default async function Home() {
               "--rows": 6,
               "--pad": "16px",
               "--tile":
-                "min(" +
-                "calc((100vw - (2*var(--pad)) - ((var(--cols) - 1) * var(--gap))) / var(--cols))," +
-                "calc((100dvh - var(--nav-h) - (2*var(--gap)) - ((calc(var(--rows) - 1)) * var(--gap))) / var(--rows))" +
-                ")",
+                "min(" + "calc((100vw - (2*var(--pad)) - ((var(--cols) - 1) * var(--gap))) / var(--cols))," +"calc((100dvh - var(--nav-h) - (2*var(--gap)) - ((calc(var(--rows) - 1)) * var(--gap))) / var(--rows))" +")",
             } as React.CSSProperties
           }
         >
@@ -173,12 +168,12 @@ export default async function Home() {
               className="hidden md:grid h-[calc(100dvh-var(--nav-h)-2*var(--gap))] grid-cols-6 [grid-auto-rows:var(--tile)]"
               style={{ gap: "var(--gap)" }}
             >
-              {/* ---------- LEFT column ---------- */}
+              {/* ---------- Section 1.1 (LEFT column) ---------- */}
               <section
                 className="col-span-3 row-span-5 grid"
                 style={{ gap: "var(--gap)", gridTemplateRows: "3fr 2fr 4fr" }}
               >
-                {/* About Me */}
+                {/* 1.1.1 About Me */}
                 <div className="relative flex h-full flex-col border border-black p-4 ">
                   <div className="mb-4 flex items-start justify-between">
                     <h3 className="font-header text-3xl uppercase">About Me</h3>
@@ -192,11 +187,16 @@ export default async function Home() {
                       </svg>
                     </Link>
                   </div>
-                  <div className="grid items-start gap-4" style={{ gridTemplateColumns: "max-content 1fr" }}>
+                  <div className="grid items-start gap-4" style={{ gridTemplateColumns: 'max-content 1fr' }}>
                     <div className="shrink-0">
                       <div className="relative h-[var(--about-h,7rem)] w-[var(--about-h,7rem)] overflow-hidden border border-black bg-zinc-200">
                         {aboutData.profile.photoUrl ? (
-                          <Image src={aboutData.profile.photoUrl} alt="Profile photo" fill className="object-cover" />
+                          <Image 
+                            src={aboutData.profile.photoUrl} 
+                            alt="Profile photo" 
+                            fill 
+                            className="object-cover" 
+                          />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center text-zinc-400">No photo</div>
                         )}
@@ -210,10 +210,10 @@ export default async function Home() {
                   </div>
                   <div className="mt-auto flex flex-wrap gap-2 pt-4">
                     {defaultTags.map((t) => (
-                      <span
-                        key={t}
+                      <span 
+                        key={t} 
                         className="border border-black/50 bg-transparent px-3 py-1 text-xs font-mono text-black"
-                        style={{ backgroundColor: skillColorMap[t] || "#F0F2E6" }}
+                        style={{ backgroundColor: skillColorMap[t] || '#F0F2E6' }}
                       >
                         {t}
                       </span>
@@ -221,7 +221,7 @@ export default async function Home() {
                   </div>
                 </div>
 
-                {/* Skills */}
+                {/* 1.1.2 Skills */}
                 <div className="relative flex h-full flex-col border border-black p-4 ">
                   <div className="flex items-start justify-between">
                     <h2 className="font-header text-3xl uppercase">Skills</h2>
@@ -261,14 +261,14 @@ export default async function Home() {
                   </div>
                 </div>
 
-                {/* EM / SD mini carousels */}
+                {/* 1.1.3 bottom row → horizontal split */}
                 <div className="grid grid-cols-2" style={{ gap: "var(--gap)" }}>
                   <MiniProjectCarousel items={EM_ITEMS} />
                   <MiniProjectCarousel items={SD_ITEMS} />
                 </div>
               </section>
 
-              {/* ---------- RIGHT column ---------- */}
+              {/* ---------- Section 1.2 (RIGHT column) ---------- */}
               <section
                 className="col-span-3 row-span-5 grid"
                 style={{ gap: "var(--gap)", gridTemplateRows: "5fr 2fr" }}
@@ -277,19 +277,22 @@ export default async function Home() {
                 <CreativePursuitsCard photos={creativeCardPhotos} />
               </section>
 
-              {/* ---------- BOTTOM band ---------- */}
+              {/* ---------- Section 2 (BOTTOM band) ---------- */}
               <div className="col-span-1 row-start-6 border border-black p-3 ">
                 <div className="grid h-full grid-rows-[auto,1fr]">
                   <h3 className="font-header text-2xl uppercase">Interests</h3>
                   <div className="flex items-center justify-center">
                     <div className="grid grid-cols-5 gap-1.5">
-                      {(aboutData.interests.length ? aboutData.interests : fallbackInterests).map((it: any, i: number) => {
+                      {(aboutData.interests.length
+                        ? aboutData.interests
+                        : fallbackInterests
+                      ).map((it, i) => {
                         const Icon = toIcon(it.icon_name);
                         return (
                           <div
                             key={`${it.label}-${i}`}
                             className="flex h-9 w-9 items-center justify-center border border-black/50"
-                            style={{ backgroundColor: it.color || "#FFB3BA" }}
+                            style={{ backgroundColor: it.color || '#FFB3BA' }}
                             title={it.label}
                           >
                             <Icon className="h-4 w-4 text-black" />
@@ -321,13 +324,13 @@ export default async function Home() {
                   <h3 className="font-header text-2xl uppercase">Contact</h3>
                   <div className="pt-2 flex items-start justify-start gap-2">
                     {aboutData.contacts.length > 0 ? (
-                      aboutData.contacts.map((contact: any) => {
-                        const normalizedIcon = contact.icon_name?.toLowerCase().trim() || "";
+                      aboutData.contacts.map((contact) => {
+                        const normalizedIcon = contact.icon_name?.toLowerCase().trim() || '';
                         const iconMap: Record<string, typeof Linkedin> = {
-                          linkedin: Linkedin,
-                          email: Mail,
-                          mail: Mail,
-                          envelope: Mail,
+                          'linkedin': Linkedin,
+                          'email': Mail,
+                          'mail': Mail,
+                          'envelope': Mail,
                         };
                         const IconComponent = iconMap[normalizedIcon] || Linkedin;
                         return (
@@ -349,13 +352,12 @@ export default async function Home() {
                 </div>
               </div>
             </div>
-
-            {/* Mobile */}
+            {/* Mobile view with cut corners */}
             <div className="md:hidden space-y-4">
-              <div className="border border-black p-4 ">About Me</div>
-              <div className="border border-black p-4 ">Skills</div>
-              <div className="border border-black p-4 ">Projects</div>
-              <div className="border border-black p-4 ">Timeline</div>
+               <div className="border border-black p-4 ">About Me</div>
+               <div className="border border-black p-4 ">Skills</div>
+               <div className="border border-black p-4 ">Projects</div>
+               <div className="border border-black p-4 ">Timeline</div>
             </div>
           </div>
         </section>

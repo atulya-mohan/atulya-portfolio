@@ -3,6 +3,8 @@
 
 import { supabaseServer } from '../supabase/server';
 
+export const runtime = 'nodejs';
+
 export type MEProject = {
   id: string;
   title: string;

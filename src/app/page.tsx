@@ -10,9 +10,6 @@ import { getAboutData } from "@/lib/about/getAboutData";
 import { getMEProjectsData } from "@/lib/projects/getMEProjectsData";
 import { createClient } from "@supabase/supabase-js";
 
-// --- DATA (Hard-coded items removed) ---
-// The hard-coded EM_ITEMS and SD_ITEMS are gone.
-
 // Define the MusicProject type
 type MusicProject = {
   id: string;
@@ -28,6 +25,7 @@ export default async function Home() {
 
   const aboutData = await getAboutData();
 
+  // Fetches photos (unchanged)
   const { data: photosData } = await supabase
     .from('photos')
     .select('id, title, image_url')
@@ -39,7 +37,7 @@ export default async function Home() {
     imageUrl: p.image_url,
   }));
   
-  // 👇 --- NEW: Fetch Music Project ---
+  // --- NEW: Fetch Music Project ---
   const { data: musicData } = await supabase
     .from('music_projects')
     .select('id, title, audio_url')
@@ -52,12 +50,11 @@ export default async function Home() {
     title: musicData.title,
     audio_url: musicData.audio_url,
   } : null;
-  // 👆 --- END NEW MUSIC FETCH ---
+  // --- END NEW MUSIC FETCH ---
 
   // Fetch ME Projects using the same function as the expanded page
   const meProjectsData = await getMEProjectsData();
   
-  // Transform the data to match MEProjectsCard component's expected format
   const meProjects = meProjectsData.map((p) => ({
     id: p.id,
     title: p.title,
@@ -69,7 +66,7 @@ export default async function Home() {
     type: p.type,
   }));
 
-  // 👇 --- Fetch EM Projects ---
+  // Fetch EM Projects
   const { data: emProjectsData } = await supabase
     .from('em_projects')
     .select('id, title, cover_image_url')
@@ -78,11 +75,11 @@ export default async function Home() {
 
   const EM_ITEMS = (emProjectsData || []).map((p: any) => ({
     title: p.title,
-    href: '/projects/engineering-management', // Links to your main EM page
+    href: '/projects/engineering-management',
     imageUrl: p.cover_image_url,
   }));
 
-  // 👇 --- Fetch SD Projects ---
+  // Fetch SD Projects
   const { data: sdProjectsData } = await supabase
     .from('sd_projects')
     .select('id, title, cover_image_url')
@@ -90,7 +87,7 @@ export default async function Home() {
 
   const SD_ITEMS = (sdProjectsData || []).map((p: any) => ({
     title: p.title,
-    href: '/projects/software-design', // Links to your main SD page
+    href: '/projects/software-design',
     imageUrl: p.cover_image_url,
   }));
 
@@ -130,7 +127,7 @@ export default async function Home() {
       case 'gamepad2': return Gamepad2;
       case 'plane':    return Plane;
       case 'wrench':   return Wrench;
-      case 'music':  // 👈 This was the typo
+      case 'music':
       default:         return Music;
     }
   };
@@ -274,6 +271,7 @@ export default async function Home() {
                 <MEProjectsCard items={meProjects} />
                 
                 {/* 👇 --- THIS IS THE FIX --- 👇 */}
+                {/* Pass the 'photos' and 'musicProject' variables */}
                 <CreativePursuitsCard photos={photos} musicProject={musicProject} />
               </section>
 

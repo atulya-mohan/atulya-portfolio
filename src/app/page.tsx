@@ -10,51 +10,42 @@ import { getAboutData } from "@/lib/about/getAboutData";
 import { getMEProjectsData } from "@/lib/projects/getMEProjectsData";
 import { createClient } from "@supabase/supabase-js";
 
-// Define the MusicProject type
-type MusicProject = {
-  id: string;
-  title: string;
-  audio_url: string | null;
-};
+// --- DATA (Hard-coded items removed) ---
+// const EM_ITEMS = [ ... ];
+// const SD_ITEMS = [ ... ];
 
 export default async function Home() {
-  const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
-  );
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  const supabase =
+    supabaseUrl && supabaseAnonKey
+      ? createClient(supabaseUrl, supabaseAnonKey)
+      : null;
+
+  if (!supabase) {
+    console.warn('[Home] Missing Supabase environment variables. Falling back to static data.');
+  }
 
   const aboutData = await getAboutData();
 
-  // Fetches photos (unchanged)
-  const { data: photosData } = await supabase
-    .from('photos')
-    .select('id, title, image_url')
-    .order('sort_index', { ascending: true });
+  let creativePhotos: { src: string; alt: string }[] = [];
 
-  const photos = (photosData || []).map((p: any) => ({
-    id: p.id,
-    title: p.title,
-    imageUrl: p.image_url,
-  }));
-  
-  // --- NEW: Fetch Music Project ---
-  const { data: musicData } = await supabase
-    .from('music_projects')
-    .select('id, title, audio_url')
-    .order('sort_index', { ascending: true })
-    .limit(1)
-    .maybeSingle(); // Get just the first one
-  
-  const musicProject: MusicProject | null = musicData ? {
-    id: musicData.id,
-    title: musicData.title,
-    audio_url: musicData.audio_url,
-  } : null;
-  // --- END NEW MUSIC FETCH ---
+  if (supabase) {
+    const { data: photosData } = await supabase
+      .from('photos')
+      .select('id, title, image_url')
+      .order('sort_index', { ascending: true });
+
+    creativePhotos = (photosData || []).map((p: any) => ({
+      src: p.image_url,
+      alt: p.title ?? 'Creative pursuit',
+    }));
+  }
 
   // Fetch ME Projects using the same function as the expanded page
   const meProjectsData = await getMEProjectsData();
   
+  // Transform the data to match MEProjectsCard component's expected format
   const meProjects = meProjectsData.map((p) => ({
     id: p.id,
     title: p.title,
@@ -66,30 +57,39 @@ export default async function Home() {
     type: p.type,
   }));
 
-  // Fetch EM Projects
-  const { data: emProjectsData } = await supabase
-    .from('em_projects')
-    .select('id, title, cover_image_url')
-    .eq('confidential', false)
-    .order('sort_index', { ascending: true });
+  // 👇 --- NEW: Fetch EM Projects ---
+  let EM_ITEMS: { title: string; href: string; imageUrl: string | null }[] = [];
 
-  const EM_ITEMS = (emProjectsData || []).map((p: any) => ({
-    title: p.title,
-    href: '/projects/engineering-management',
-    imageUrl: p.cover_image_url,
-  }));
+  if (supabase) {
+    const { data: emProjectsData } = await supabase
+      .from('em_projects')
+      .select('id, title, cover_image_url')
+      .eq('confidential', false)
+      .order('sort_index', { ascending: true });
 
-  // Fetch SD Projects
-  const { data: sdProjectsData } = await supabase
-    .from('sd_projects')
-    .select('id, title, cover_image_url')
-    .order('sort_index', { ascending: true });
+    EM_ITEMS = (emProjectsData || []).map((p: any) => ({
+      title: p.title,
+      href: '/projects/engineering-management', // Links to your main EM page
+      imageUrl: p.cover_image_url,
+    }));
+  }
 
-  const SD_ITEMS = (sdProjectsData || []).map((p: any) => ({
-    title: p.title,
-    href: '/projects/software-design',
-    imageUrl: p.cover_image_url,
-  }));
+  // 👇 --- NEW: Fetch SD Projects ---
+  let SD_ITEMS: { title: string; href: string; imageUrl: string | null }[] = [];
+
+  if (supabase) {
+    const { data: sdProjectsData } = await supabase
+      .from('sd_projects')
+      .select('id, title, cover_image_url')
+      .order('sort_index', { ascending: true });
+
+    SD_ITEMS = (sdProjectsData || []).map((p: any) => ({
+      title: p.title,
+      href: '/projects/software-design', // Links to your main SD page
+      imageUrl: p.cover_image_url,
+    }));
+  }
+  // 👆 --- END NEW DATA ---
 
   // --- UPDATED: Create a map of skill to color based on skill groups ---
   const skillColorMap: Record<string, string> = {};
@@ -119,6 +119,11 @@ export default async function Home() {
 
   // Default tags with their colors from the skill groups
   const defaultTags = ['Mechanical Design', 'Prototyping', 'Strategy', 'Manufacturing'];
+
+  const creativeCardPhotos =
+    creativePhotos.length > 0
+      ? creativePhotos
+      : [{ src: '/placeholder.png', alt: 'Placeholder photo' }];
 
   // --- Helper function and fallbacks from about-me page ---
   const toIcon = (name?: string | null) => {
@@ -184,7 +189,7 @@ export default async function Home() {
                   </div>
                   <div className="grid items-start gap-4" style={{ gridTemplateColumns: 'max-content 1fr' }}>
                     <div className="shrink-0">
-                      <div className="relative h-[var(--about-h,7rem)] w-[var(--about-h,7rem)] overflow-hidden border border-black bg-zinc-200 whitespace-pre-line">
+                      <div className="relative h-[var(--about-h,7rem)] w-[var(--about-h,7rem)] overflow-hidden border border-black bg-zinc-200">
                         {aboutData.profile.photoUrl ? (
                           <Image 
                             src={aboutData.profile.photoUrl} 
@@ -198,7 +203,7 @@ export default async function Home() {
                       </div>
                     </div>
                     <div className="min-w-0">
-                      <p className="font-body text-sm leading-relaxed text-zinc-800 h-[var(--about-h,7rem)] overflow-hidden [display:-webkit-box] [-webkit-line-clamp:5] [-webkit-box-orient:vertical] whitespace-pre-line">
+                      <p className="font-body text-sm leading-relaxed text-zinc-800 h-[var(--about-h,7rem)] overflow-hidden [display:-webkit-box] [-webkit-line-clamp:5] [-webkit-box-orient:vertical]">
                         {aboutData.profile.bio || "Bio not available"}
                       </p>
                     </div>
@@ -269,10 +274,7 @@ export default async function Home() {
                 style={{ gap: "var(--gap)", gridTemplateRows: "5fr 2fr" }}
               >
                 <MEProjectsCard items={meProjects} />
-                
-                {/* 👇 --- THIS IS THE FIX --- 👇 */}
-                {/* Pass the 'photos' and 'musicProject' variables */}
-                <CreativePursuitsCard photos={photos} musicProject={musicProject} />
+                <CreativePursuitsCard photos={creativeCardPhotos} />
               </section>
 
               {/* ---------- Section 2 (BOTTOM band) ---------- */}

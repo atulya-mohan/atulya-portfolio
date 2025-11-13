@@ -45,6 +45,21 @@ export type ContactLink = { label: string; url: string; icon_name?: string | nul
 export async function getAboutData() {
   const supabase = supabaseServer();
 
+  if (!supabase) {
+    console.warn('[getAboutData] Supabase client unavailable. Returning fallback content.');
+    return {
+      profile: {
+        name: null,
+        bio: null,
+        photoUrl: null,
+      },
+      timeline: { top: [], bottom: [] },
+      skills: [] as SkillGroup[],
+      interests: [] as Interest[],
+      contacts: [] as ContactLink[],
+    };
+  }
+
   console.log('=== Starting getAboutData ===');
 
   /* ---------- Profile (name, bio, photo) ---------- */

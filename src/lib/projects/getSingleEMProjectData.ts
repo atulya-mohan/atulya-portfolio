@@ -9,6 +9,12 @@ import type { EMProject } from './getEMProjectsData';
  */
 export async function getSingleEMProjectData(id: string): Promise<EMProject | null> {
   const supabase = supabaseServer();
+
+  if (!supabase) {
+    console.warn('[getSingleEMProjectData] Supabase client unavailable. Returning null.');
+    return null;
+  }
+
   console.log(`=== Fetching Single EM Project: ${id} ===`);
 
   const { data: project, error: projectError } = await supabase

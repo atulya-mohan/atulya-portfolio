@@ -19,6 +19,11 @@ export type SDProject = {
 export async function getSDProjectsData(): Promise<SDProject | null> {
   const supabase = supabaseServer();
 
+  if (!supabase) {
+    console.warn('[getSDProjectsData] Supabase client unavailable. Returning null dataset.');
+    return null;
+  }
+
   // 1. Fetch the first (and only) SD project
   const { data: project, error: projectError } = await supabase
     .from('sd_projects')

@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { ArrowUpRight } from 'lucide-react';
 import Link from 'next/link';
 import React, { useState, useEffect } from 'react';
-import { createClient } from '@supabase/supabase-js';
+import { getSupabaseBrowser } from '@/lib/supabase/browser';
 
 // --- Define Types ---
 type Item = {
@@ -49,10 +49,13 @@ export default function ProjectsPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
-    );
+    const supabase = getSupabaseBrowser();
+
+    if (!supabase) {
+      console.warn('[ProjectsPage] Supabase client unavailable. Displaying empty state.');
+      setLoading(false);
+      return;
+    }
 
     const fetchProjects = async () => {
       setLoading(true);

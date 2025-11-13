@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useMemo, useState, useEffect } from "react"; // 👈 Hooks are here
+import { useMemo, useState, useEffect } from "react";
 import { ChevronLeft, ChevronRight, ArrowUpRight } from "lucide-react";
 
 type Item = {
@@ -33,45 +33,31 @@ export default function MEProjectsCard({
   thumbH?: number;
   thumbHMd?: number;
 }) {
-  // 👇 --- ALL HOOKS MUST BE CALLED AT THE TOP ---
-  const n = Math.max(items.length, 1);
+  const isPlaceholder = !items || items.length === 0;
+  const safeItems: Item[] = isPlaceholder
+    ? [
+        {
+          id: "placeholder",
+          title: "Project Coming Soon",
+          href: viewAllHref,
+          summary:
+            "Project gallery coming soon. Check back for fresh mechanical engineering updates.",
+          imageUrls: [],
+        },
+      ]
+    : items;
+
+  const n = Math.max(safeItems.length, 1);
   const [i, setI] = useState(0);
   const [imgIdx, setImgIdx] = useState(0);
-  
+  const cur = safeItems[i % n];
+  const numImages = cur?.imageUrls?.length || 0;
+
   const others = useMemo(() => {
     const out: number[] = [];
     for (let k = 1; k <= Math.min(thumbCount, n - 1); k++) out.push((i + k) % n);
     return out;
   }, [i, n, thumbCount]);
-
-  useEffect(() => {
-    setImgIdx(0);
-  }, [i]);
-  // 👆 --- END OF HOOKS ---
-
-  // 👇 --- THE 'if' BLOCK IS NOW MOVED HERE ---
-  if (items.length === 0) {
-    return (
-      <div
-        className={
-          "relative flex h-full min-h-0 flex-col " +
-          "gap-2 border border-black p-4  " +
-          className
-        }
-      >
-        <div className="flex items-center justify-between">
-           <h2 className="font-header text-3xl uppercase text-black">{title}</h2>
-        </div>
-        <div className="flex-1 flex items-center justify-center">
-          <p className="font-mono text-zinc-500">No projects found.</p>
-        </div>
-      </div>
-    );
-  }
-  // 👆 --- END OF FIX ---
-
-  const cur = items[i % n];
-  const numImages = cur?.imageUrls?.length || 0;
 
   const goProject = (dir: -1 | 1) => () => setI((x) => (x + dir + n) % n);
   
@@ -80,6 +66,10 @@ export default function MEProjectsCard({
       setImgIdx(prev => (prev + dir + numImages) % numImages);
     }
   };
+
+  useEffect(() => {
+    setImgIdx(0);
+  }, [i]);
 
   return (
     <div
@@ -113,23 +103,29 @@ export default function MEProjectsCard({
         {/* LEFT: Description */}
         <div className="flex h-full min-w-0 flex-col border border-black p-4">
           
-          <div className="flex-1 min-h-0 overflow-hidden">
-            <p className="font-body text-sm leading-relaxed text-zinc-800 [display:-webkit-box] [-webkit-line-clamp:5] [-webkit-box-orient:vertical]">
-              {cur.summary ??
-                "Brief overview of the selected project goes here. Replace with your real content."}
-            </p>
-          </div>
-
+          {/* 👇 --- THIS IS THE FIX --- 👇 */}
+          {/* This <p> tag now has a fixed height (h-[7rem]) and all the
+            line-clamp classes, just like your "About Me" box.
+            The 'flex-1' class was removed to allow truncation.
+          */}
+          <p className="font-body text-sm leading-relaxed text-zinc-800 h-[7rem] overflow-hidden [display:-webkit-box] [-webkit-line-clamp:5] [-webkit-box-orient:vertical]">
+            {cur.summary ??
+              "Brief overview of the selected project goes here. Replace with your real content."}
+          </p>
+          {/* 👆 --- END OF FIX --- 👆 */}
+          
           <div className="mt-auto flex items-center gap-2 pt-3">
             <button
               onClick={goProject(-1)}
               className="border-2 border-black px-3 py-1.5 font-mono text-sm text-black transition-colors hover:border-[#FF4F00] hover:bg-[#FF4F00] hover:text-white"
+              disabled={isPlaceholder}
             >
               PREV
             </button>
             <button
               onClick={goProject(1)}
               className="border-2 border-black px-3 py-1.5 font-mono text-sm text-black transition-colors hover:border-[#FF4F00] hover:bg-[#FF4F00] hover:text-white"
+              disabled={isPlaceholder}
             >
               NEXT
             </button>
@@ -181,7 +177,7 @@ export default function MEProjectsCard({
           className="grid grid-cols-3 gap-2 [grid-auto-rows:var(--thumb-h)] md:[grid-auto-rows:var(--thumb-h-md)]"
         >
           {others.map((idx) => {
-            const it = items[idx];
+            const it = safeItems[idx];
             return (
               <button
                 key={`thumb-${idx}-${it.id}`}
@@ -189,6 +185,7 @@ export default function MEProjectsCard({
                 aria-label={`Show ${it.title}`}
                 title={it.title}
                 className="block h-full w-full relative overflow-hidden border border-black bg-zinc-200 transition-all hover:border-2 hover:border-black focus-visible:outline-none focus-visible:border-2 focus-visible:border-black"
+                disabled={isPlaceholder}
               >
                 {it.imageUrls && it.imageUrls[0] ? (
                   <Image src={it.imageUrls[0]} alt={it.title} fill className="object-cover" />

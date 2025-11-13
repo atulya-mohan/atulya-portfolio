@@ -164,7 +164,10 @@ export default function ResumePage() {
                                         <h3 className="font-mono font-bold text-base text-black">{exp.company}</h3>
                                         <span className="font-mono text-xs text-black/70">{exp.dates}</span>
                                     </div>
-                                    <p className="font-mono text-sm text-black/90 mb-1">{exp.role} <span className="text-black/60"> {exp.location}</span></p>
+                                    <p className="font-mono text-sm text-black/90 mb-1">
+                                        {exp.role}{" "}
+                                        <span className="text-black/60">{` // ${exp.location}`}</span>
+                                    </p>
                                     <ul className="list-disc list-inside space-y-1">
                                          {exp.points.map((point, pIdx) => (
                                             <li key={pIdx} className="font-body text-xs text-zinc-700 leading-snug">{point}</li>

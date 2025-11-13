@@ -17,6 +17,11 @@ export type MEProject = {
 export async function getMEProjectsData(): Promise<MEProject[]> {
   const supabase = supabaseServer();
 
+  if (!supabase) {
+    console.warn('[getMEProjectsData] Supabase client unavailable. Returning empty dataset.');
+    return [];
+  }
+
   console.log('=== Fetching ME Projects ===');
 
   // Fetch all ME projects ordered by sort_index
@@ -69,6 +74,7 @@ export async function getMEProjectsData(): Promise<MEProject[]> {
     type: p.type,
     blurb: p.blurb,
     images: imagesByProject[p.id] ?? [],
+    coverImageUrl: p.cover_image_url ?? null,
   }));
 
   console.log('=== Final ME Projects ===', result);

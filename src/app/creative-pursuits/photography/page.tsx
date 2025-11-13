@@ -14,12 +14,18 @@ type Photo = {
     location?: string;
 };
 
-const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
-);
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+const supabase = supabaseUrl && supabaseAnonKey
+    ? createClient(supabaseUrl, supabaseAnonKey)
+    : null;
 
 async function fetchPhotos(): Promise<Photo[]> {
+    if (!supabase) {
+        return [];
+    }
+
     try {
         const { data, error } = await supabase
             .from('photos')

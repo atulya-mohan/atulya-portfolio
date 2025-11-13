@@ -45,6 +45,11 @@ export type EMProject = {
 export async function getEMProjectsData(): Promise<EMProject[]> {
   const supabase = supabaseServer();
 
+  if (!supabase) {
+    console.warn('[getEMProjectsData] Supabase client unavailable. Returning empty dataset.');
+    return [];
+  }
+
   console.log('=== Fetching EM Projects (Summary) ===');
 
   const { data: projects, error: projectsError } = await supabase

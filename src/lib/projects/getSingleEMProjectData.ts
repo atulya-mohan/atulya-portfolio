@@ -1,5 +1,3 @@
-'use server';
-
 import { supabaseServer } from '../supabase/server';
 // Reuse the EMProject type from your other file
 import type { EMProject } from './getEMProjectsData';

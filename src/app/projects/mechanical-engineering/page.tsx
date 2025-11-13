@@ -7,6 +7,8 @@ import { useState, useEffect, useRef } from 'react';
 // Restore the import for your actual data fetching function
 import { getMEProjectsData, type MEProject } from '@/lib/projects/getMEProjectsData'; // Ensure this path is correct
 
+export const runtime = 'nodejs';
+
 /* ---------------- component ---------------- */
 
 export default function ExpandedME() {

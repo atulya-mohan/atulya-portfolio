@@ -14,6 +14,8 @@ import { createClient } from "@supabase/supabase-js";
 // const EM_ITEMS = [ ... ];
 // const SD_ITEMS = [ ... ];
 
+export const runtime = 'nodejs';
+
 export default async function Home() {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;

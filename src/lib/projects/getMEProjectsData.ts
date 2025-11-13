@@ -1,9 +1,4 @@
-// src/lib/projects/getMEProjectsData.ts
-'use server';
-
 import { supabaseServer } from '../supabase/server';
-
-export const runtime = 'nodejs';
 
 export type MEProject = {
   id: string;
@@ -24,9 +19,7 @@ export async function getMEProjectsData(): Promise<MEProject[]> {
     return [];
   }
 
-  console.log('=== Fetching ME Projects ===');
-
-  // Fetch all ME projects ordered by sort_index
+  // Projects
   const { data: projects, error: projectsError } = await supabase
     .from('me_projects')
     .select('id, title, role, year, type, blurb, sort_index, cover_image_url')
@@ -36,15 +29,9 @@ export async function getMEProjectsData(): Promise<MEProject[]> {
     console.error('Error fetching ME projects:', projectsError);
     return [];
   }
+  if (!projects?.length) return [];
 
-  console.log('Found projects:', projects?.length);
-
-  if (!projects || projects.length === 0) {
-    console.log('No projects found');
-    return [];
-  }
-
-  // Fetch images for all projects
+  // Images
   const projectIds = projects.map(p => p.id);
   const { data: images, error: imagesError } = await supabase
     .from('me_project_images')
@@ -52,23 +39,14 @@ export async function getMEProjectsData(): Promise<MEProject[]> {
     .in('project_id', projectIds)
     .order('sort_index', { ascending: true });
 
-  if (imagesError) {
-    console.error('Error fetching ME project images:', imagesError);
-  }
+  if (imagesError) console.error('Error fetching ME project images:', imagesError);
 
-  console.log('Found images:', images?.length);
-
-  // Group images by project_id
   const imagesByProject: Record<string, string[]> = {};
   for (const img of images ?? []) {
-    if (!imagesByProject[img.project_id]) {
-      imagesByProject[img.project_id] = [];
-    }
-    imagesByProject[img.project_id].push(img.image_url);
+    (imagesByProject[img.project_id] ??= []).push(img.image_url);
   }
 
-  // Map projects with their images
-  const result: MEProject[] = projects.map(p => ({
+  return projects.map(p => ({
     id: p.id,
     title: p.title,
     role: p.role,
@@ -78,7 +56,4 @@ export async function getMEProjectsData(): Promise<MEProject[]> {
     images: imagesByProject[p.id] ?? [],
     coverImageUrl: p.cover_image_url ?? null,
   }));
-
-  console.log('=== Final ME Projects ===', result);
-  return result;
 }

@@ -3,6 +3,8 @@
 import { getAboutData } from '@/lib/about/getAboutData';
 import AboutPageClient from './AboutPageClient';
 
+export const runtime = 'nodejs';
+
 export default async function AboutPage() {
   const aboutData = await getAboutData();
   const { skills } = aboutData;

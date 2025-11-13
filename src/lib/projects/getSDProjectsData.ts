@@ -1,5 +1,3 @@
-'use server';
-
 import { supabaseServer } from '../supabase/server';
 
 // Define the type for our project data

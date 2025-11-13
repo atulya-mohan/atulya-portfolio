@@ -1,42 +1,37 @@
 import { supabaseServer } from '../supabase/server';
-import type {
-  TimelineSeg,
-  TimelineEducation,
-  TimelineExperience,
-} from '@/lib/about/types';
+import type { TimelineSeg } from '@/lib/about/types';
 
-// If you previously had these types in this file, you can keep them here
-// since we are NOT using "use server" anymore.
 export type SkillGroup = { name: string; skills: string[]; color?: string | null };
 export type Interest   = { label: string; icon_name?: string | null; color?: string | null };
 export type ContactLink = { label: string; url: string; icon_name?: string | null };
 
-const FALLBACK = {
-  profile: { name: null as string | null, bio: null as string | null, photoUrl: null as string | null },
-  timeline: { top: [] as TimelineSeg[], bottom: [] as TimelineSeg[] },
-  skills: [] as SkillGroup[],
-  interests: [] as Interest[],
-  contacts: [] as ContactLink[],
-};
-
 export async function getAboutData() {
   const supabase = supabaseServer();
+
   if (!supabase) {
     console.warn('[getAboutData] Supabase client unavailable. Returning fallback content.');
-    return FALLBACK;
+    return {
+      profile: { name: null, bio: null, photoUrl: null },
+      timeline: { top: [] as TimelineSeg[], bottom: [] as TimelineSeg[] },
+      skills: [] as SkillGroup[],
+      interests: [] as Interest[],
+      contacts: [] as ContactLink[],
+    };
   }
 
-  // ----- Profile -----
+  /* ---------- Profile ---------- */
   const { data: profileRow, error: profileError } = await supabase
     .from('about_profile')
     .select('full_name, bio, photo_url')
+    .order('updated_at', { ascending: false })
     .limit(1)
     .maybeSingle();
-  if (profileError) console.error('[getAboutData] profile error:', profileError);
+
+  if (profileError) console.warn('[getAboutData] profileError:', profileError);
 
   let photoUrl: string | null = null;
   if (profileRow?.photo_url) {
-    if (/^https?:\/\//i.test(profileRow.photo_url)) {
+    if (profileRow.photo_url.startsWith('http')) {
       photoUrl = profileRow.photo_url;
     } else {
       const { data } = supabase.storage.from('portfolio').getPublicUrl(profileRow.photo_url);
@@ -44,120 +39,65 @@ export async function getAboutData() {
     }
   }
 
-  // ----- Timeline segments (then join details) -----
-  const { data: segs, error: segError } = await supabase
-    .from('timeline_segments')
-    .select('id, band, start_ym, end_ym, label, logo_url, type, sort_index')
-    .order('sort_index', { ascending: true });
-  if (segError) console.error('[getAboutData] timeline_segments error:', segError);
+  /* ---------- Timeline ---------- */
+  const { data: topRaw,   error: topError } = await supabase
+    .from('timeline_segments').select('start_ym, end_ym, label, band, sort_index, logo_url')
+    .eq('band', 'top').order('sort_index', { ascending: true });
 
-  const allSegs = segs ?? [];
-  const eduIds = allSegs.filter(s => s.type === 'education').map(s => s.id);
-  const expIds = allSegs.filter(s => s.type === 'experience').map(s => s.id);
+  const { data: botRaw,   error: botError } = await supabase
+    .from('timeline_segments').select('start_ym, end_ym, label, band, sort_index, logo_url')
+    .eq('band', 'bottom').order('sort_index', { ascending: true });
 
-  const [eduRes, expRes] = await Promise.all([
-    eduIds.length
-      ? supabase
-          .from('timeline_education')
-          .select('timeline_segment_id, institution, degree, field_of_study, description, achievements, gpa, location')
-          .in('timeline_segment_id', eduIds)
-      : Promise.resolve({ data: [] as any[], error: null }),
-    expIds.length
-      ? supabase
-          .from('timeline_experience')
-          .select('timeline_segment_id, company, position, description, responsibilities, technologies, location')
-          .in('timeline_segment_id', expIds)
-      : Promise.resolve({ data: [] as any[], error: null }),
-  ]);
+  if (topError) console.warn('[getAboutData] topError:', topError);
+  if (botError) console.warn('[getAboutData] botError:', botError);
 
-  if ('error' in eduRes && eduRes.error) console.error('[getAboutData] timeline_education error:', eduRes.error);
-  if ('error' in expRes && expRes.error) console.error('[getAboutData] timeline_experience error:', expRes.error);
+  const top: TimelineSeg[] = (topRaw ?? []).map(r => ({
+    start: r.start_ym, end: r.end_ym ?? undefined, label: r.label ?? undefined, logo_url: r.logo_url ?? undefined,
+  }));
 
-  const eduMap: Record<string, TimelineEducation> = {};
-  for (const r of (eduRes as any).data ?? []) {
-    eduMap[r.timeline_segment_id] = {
-      institution: r.institution,
-      degree: r.degree ?? null,
-      field_of_study: r.field_of_study ?? null,
-      description: r.description ?? null,
-      achievements: (r.achievements as string[] | null) ?? null,
-      gpa: r.gpa ?? null,
-      location: r.location ?? null,
-    };
-  }
+  const bottom: TimelineSeg[] = (botRaw ?? []).map(r => ({
+    start: r.start_ym, end: r.end_ym ?? undefined, label: r.label ?? undefined, logo_url: r.logo_url ?? undefined,
+  }));
 
-  const expMap: Record<string, TimelineExperience> = {};
-  for (const r of (expRes as any).data ?? []) {
-    expMap[r.timeline_segment_id] = {
-      company: r.company,
-      position: r.position,
-      description: r.description ?? null,
-      responsibilities: (r.responsibilities as string[] | null) ?? null,
-      technologies: (r.technologies as string[] | null) ?? null,
-      location: r.location ?? null,
-    };
-  }
-
-  const mapSeg = (r: any): TimelineSeg => ({
-    id: r.id,
-    start: r.start_ym,
-    end: r.end_ym,
-    label: r.label ?? undefined,
-    logo_url: r.logo_url ?? undefined,
-    type: r.type ?? null,
-    details: r.type === 'education' ? eduMap[r.id] ?? null : r.type === 'experience' ? expMap[r.id] ?? null : null,
-  });
-
-  const top: TimelineSeg[] = (allSegs.filter(s => s.band === 'top') ?? []).map(mapSeg);
-  const bottom: TimelineSeg[] = (allSegs.filter(s => s.band === 'bottom') ?? []).map(mapSeg);
-
-  // ----- Skills -----
+  /* ---------- Skills ---------- */
   const { data: groups, error: groupsError } = await supabase
-    .from('skill_groups')
-    .select('id, name, color, sort_index')
-    .order('sort_index', { ascending: true });
-  if (groupsError) console.error('[getAboutData] skill_groups error:', groupsError);
+    .from('skill_groups').select('id, name, color, sort_index').order('sort_index', { ascending: true });
 
-  let skills: SkillGroup[] = [];
-  if (groups?.length) {
-    const groupIds = groups.map(g => g.id);
+  if (groupsError) console.warn('[getAboutData] groupsError:', groupsError);
+
+  const groupIds = (groups ?? []).map(g => g.id);
+  const skillsByGroup: Record<string, string[]> = {};
+  if (groupIds.length) {
     const { data: skillsRows, error: skillsError } = await supabase
-      .from('skills')
-      .select('group_id, label, sort_index')
-      .in('group_id', groupIds)
-      .order('sort_index', { ascending: true });
-    if (skillsError) console.error('[getAboutData] skills error:', skillsError);
+      .from('skills').select('group_id, label, sort_index')
+      .in('group_id', groupIds).order('sort_index', { ascending: true });
+    if (skillsError) console.warn('[getAboutData] skillsError:', skillsError);
 
-    const byGroup: Record<string, string[]> = {};
-    for (const g of groups) byGroup[g.id] = [];
-    for (const s of skillsRows ?? []) (byGroup[s.group_id] ??= []).push(s.label);
-
-    skills = groups.map(g => ({
-      name: g.name,
-      skills: byGroup[g.id] ?? [],
-      color: g.color ?? null,
-    }));
+    for (const g of groups ?? []) skillsByGroup[g.id] = [];
+    for (const s of skillsRows ?? []) (skillsByGroup[s.group_id] ??= []).push(s.label);
   }
 
-  // ----- Interests -----
-  const { data: interestsRows, error: interestsError } = await supabase
-    .from('interests')
-    .select('label, icon_name, color, sort_index')
-    .order('sort_index', { ascending: true });
-  if (interestsError) console.error('[getAboutData] interests error:', interestsError);
+  const skills: SkillGroup[] = (groups ?? []).map(g => ({
+    name: g.name,
+    skills: skillsByGroup[g.id] ?? [],
+    color: g.color ?? null,
+  }));
 
-  // ----- Contacts -----
-  const { data: contactsRows, error: contactsError } = await supabase
-    .from('contact_links')
-    .select('label, url, icon_name, sort_index')
-    .order('sort_index', { ascending: true });
-  if (contactsError) console.error('[getAboutData] contact_links error:', contactsError);
+  /* ---------- Interests ---------- */
+  const { data: interests, error: interestsError } = await supabase
+    .from('interests').select('label, icon_name, color, sort_index').order('sort_index', { ascending: true });
+  if (interestsError) console.warn('[getAboutData] interestsError:', interestsError);
+
+  /* ---------- Contacts ---------- */
+  const { data: contacts, error: contactsError } = await supabase
+    .from('contact_links').select('label, url, icon_name, sort_index').order('sort_index', { ascending: true });
+  if (contactsError) console.warn('[getAboutData] contactsError:', contactsError);
 
   return {
     profile: { name: profileRow?.full_name ?? null, bio: profileRow?.bio ?? null, photoUrl },
     timeline: { top, bottom },
     skills,
-    interests: (interestsRows ?? []) as Interest[],
-    contacts: (contactsRows ?? []) as ContactLink[],
+    interests: (interests ?? []) as Interest[],
+    contacts: (contacts ?? []) as ContactLink[],
   };
 }

@@ -1,7 +1,6 @@
 'use client';
 
 import Image from 'next/image';
-import Link from 'next/link'; // Keep for internal links
 import React, { useState, useMemo, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, ArrowUpRight } from 'lucide-react';
 import type { SDProject } from '@/lib/projects/getSDProjectsData';
@@ -143,18 +142,18 @@ export default function ClubscapePage() {
           </div>
 
           {/* 👇 ============= LAYOUT UPDATED ============= 👇 */}
-          {/* Main Content Grid: 3 cols, 4 rows */}
-          <div className="grid flex-1 min-h-0 grid-cols-3 grid-rows-4 gap-[var(--gap)]">
+          {/* Main Content Grid: 3 cols, 5 rows (changed from 4 to give hero more space) */}
+          <div className="grid flex-1 min-h-0 grid-cols-3 grid-rows-5 gap-[var(--gap)]">
 
-            {/* --- Hero: Title + Overview + Badges (Top Left) --- */}
-            <div className="col-span-2 row-span-1 border border-black bg-[#F0F2E6] p-4 flex flex-col">
+            {/* --- Hero: Title + Overview + Badges (Top Left) - Now takes 2 rows --- */}
+            <div className="col-span-2 row-span-2 border border-black bg-[#F0F2E6] p-4 flex flex-col">
               <div className="flex flex-wrap items-center gap-2 mb-2">
                  {project.techStack.map(tech => <Badge key={tech} label={tech} />)}
                  {project.status && <Badge label={project.status}/>}
               </div>
               <h2 className="font-header text-3xl uppercase text-black mb-2">{project.title}</h2>
-              {/* Added scrollbar here in case blurb is long */}
-              <p className="font-body text-sm text-zinc-800 flex-1 min-h-0 overflow-y-auto page-scrollbar pr-1">{project.blurb}</p>
+              {/* Removed scrollbar since hero box is now bigger */}
+              <p className="font-body text-sm text-zinc-800 flex-1 min-h-0">{project.blurb}</p>
               <div className="mt-auto flex-shrink-0 pt-2">
                  <h4 className="font-mono text-xs font-bold text-black mb-1 uppercase tracking-wide">Links</h4>
                  <div className="flex space-x-2">
@@ -178,8 +177,8 @@ export default function ClubscapePage() {
               </div>
             </div>
 
-            {/* --- Phone Carousel (Full Right Column) --- */}
-            <div className="col-span-1 row-span-4 border border-black bg-[#F0F2E6] p-3 flex flex-col">
+            {/* --- Phone Carousel (Full Right Column) - Now spans all 5 rows --- */}
+            <div className="col-span-1 row-span-5 border border-black bg-[#F0F2E6] p-3 flex flex-col">
               
               <div className="relative w-full flex-1 min-h-0 flex items-center justify-center">
                 {/* Left Arrow */}
@@ -241,17 +240,17 @@ export default function ClubscapePage() {
               </div>
             </div>
 
-            {/* --- Problem Section (Left, Row 2) --- */}
-            <InfoSection title="Problem" className="col-span-2 row-span-1 overflow-y-auto page-scrollbar">
+            {/* --- Problem Section (Left, Row 3) - Smaller now --- */}
+            <InfoSection title="Problem" className="col-span-2 row-span-1">
                <p className="text-sm">{project.problem}</p>
             </InfoSection>
 
-            {/* --- Solution Section (Left, Row 3) --- */}
-            <InfoSection title="Solution" className="col-span-2 row-span-1 overflow-y-auto page-scrollbar">
+            {/* --- Solution Section (Left, Row 4) - Smaller now --- */}
+            <InfoSection title="Solution" className="col-span-2 row-span-1">
                <p className="text-sm">{project.solution}</p>
             </InfoSection>
 
-             {/* --- Key Features (Left, Row 4) --- */}
+             {/* --- Key Features (Left, Row 5) --- */}
              <InfoSection title="Key Features" className="col-span-2 row-span-1 overflow-y-auto page-scrollbar">
                 <ul className="list-disc list-inside space-y-1 text-sm">
                    {project.keyFeatures.map(feature => <li key={feature}>{feature}</li>)}

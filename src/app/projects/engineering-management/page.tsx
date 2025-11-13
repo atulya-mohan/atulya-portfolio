@@ -9,9 +9,9 @@ import {
   ArrowUpRight,
 } from 'lucide-react';
 
-// Import your two data fetchers
-import { getEMProjectsData, type EMProject } from '@/lib/projects/getEMProjectsData';
-import { getSingleEMProjectData } from '@/lib/projects/getSingleEMProjectData';
+// Import types and browser Supabase client
+import type { EMProject } from '@/lib/projects/getEMProjectsData';
+import { getSupabaseBrowser } from '@/lib/supabase/browser';
 
 const isPDF = (src: string) => /\.pdf($|\?)/i.test(src);
 
@@ -325,17 +325,87 @@ export default function ExpandedEM() {
   const [i, setI] = useState(0);
   const [slide, setSlide] = useState(0);
 
-  // Fetch *summary* projects on mount
+  // Fetch *summary* projects on mount using browser Supabase client
   useEffect(() => {
     const fetchProjects = async () => {
       setInitialLoading(true);
+      const supabase = getSupabaseBrowser();
+      
+      if (!supabase) {
+        console.warn('[ExpandedEM] Supabase client unavailable. Displaying empty state.');
+        setProjects([]);
+        setInitialLoading(false);
+        return;
+      }
+
       try {
-        const data = await getEMProjectsData();
-        setProjects(data);
-        if (data.length > 0) {
-          // We'll trigger the detail load for the first item
-          // in the *next* useEffect, which depends on [i, projects]
+        // Fetch projects
+        const { data: projectsData, error: projectsError } = await supabase
+          .from('em_projects')
+          .select('id, title, role, year, type, blurb, cover_image_url, modules, outcomes, theme, sort_index, problem_users, rd_timeline, rd_enablers, rd_frictions, rd_takeaways, ipod_thesis, ipod_levers, ipod_kpis, ipod_insight, pm_persona')
+          .eq('confidential', false)
+          .order('sort_index', { ascending: true });
+
+        if (projectsError) {
+          console.error('Error fetching EM projects:', projectsError);
+          setProjects([]);
+          setInitialLoading(false);
+          return;
         }
+
+        if (!projectsData?.length) {
+          setProjects([]);
+          setInitialLoading(false);
+          return;
+        }
+
+        // Fetch images for all projects
+        const projectIds = projectsData.map(p => p.id);
+        const { data: imagesData, error: imagesError } = await supabase
+          .from('em_project_images')
+          .select('id, project_id, image_url, sort_index')
+          .in('project_id', projectIds)
+          .order('sort_index', { ascending: true });
+
+        if (imagesError) {
+          console.error('Error fetching EM project images:', imagesError);
+        }
+
+        // Group images by project
+        const imagesByProject: Record<string, string[]> = {};
+        for (const img of imagesData ?? []) {
+          if (!imagesByProject[img.project_id]) {
+            imagesByProject[img.project_id] = [];
+          }
+          imagesByProject[img.project_id].push(img.image_url);
+        }
+
+        // Transform to EMProject format
+        const transformedProjects: EMProject[] = projectsData.map(p => ({
+          id: p.id,
+          title: p.title,
+          role: p.role,
+          year: p.year,
+          type: p.type,
+          blurb: p.blurb,
+          coverImageUrl: p.cover_image_url ?? null,
+          modules: p.modules ?? [],
+          outcomes: p.outcomes ?? [],
+          theme: p.theme ?? 'seminar',
+          media: imagesByProject[p.id] ?? [],
+          problem_users: p.problem_users,
+          rd_timeline: p.rd_timeline,
+          rd_enablers: p.rd_enablers,
+          rd_frictions: p.rd_frictions,
+          rd_takeaways: p.rd_takeaways,
+          ipod_thesis: p.ipod_thesis,
+          ipod_levers: p.ipod_levers,
+          ipod_kpis: p.ipod_kpis,
+          ipod_insight: p.ipod_insight,
+          pm_persona: p.pm_persona,
+        }));
+
+        setProjects(transformedProjects);
       } catch (error) {
         console.error('Failed to fetch projects:', error);
         setProjects([]);
@@ -362,11 +432,84 @@ export default function ExpandedEM() {
       return;
     }
 
-    // 3. Details are not loaded. Fetch them.
+    // 3. Details are not loaded. Fetch them using browser Supabase client.
     const fetchDetails = async () => {
       setDetailLoading(true);
+      const supabase = getSupabaseBrowser();
+      
+      if (!supabase) {
+        console.warn('[ExpandedEM] Supabase client unavailable for details fetch.');
+        setDetailLoading(false);
+        return;
+      }
+
       try {
-        const detailedData = await getSingleEMProjectData(currentProject.id);
+        // Fetch full project data
+        const { data: projectData, error: projectError } = await supabase
+          .from('em_projects')
+          .select('*')
+          .eq('id', currentProject.id)
+          .maybeSingle();
+
+        if (projectError) {
+          console.error(`Error fetching project details ${currentProject.id}:`, projectError);
+          setDetailLoading(false);
+          return;
+        }
+
+        if (!projectData) {
+          setDetailLoading(false);
+          return;
+        }
+
+        // Fetch images
+        const { data: imagesData, error: imagesError } = await supabase
+          .from('em_project_images')
+          .select('image_url')
+          .eq('project_id', currentProject.id)
+          .order('sort_index', { ascending: true });
+
+        if (imagesError) {
+          console.error(`Error fetching images for project ${currentProject.id}:`, imagesError);
+        }
+
+        const mediaUrls = (imagesData ?? [])
+          .map((img) => img.image_url)
+          .filter(Boolean) as string[];
+
+        // Transform to EMProject format
+        const detailedData: EMProject = {
+          id: projectData.id,
+          title: projectData.title,
+          role: projectData.role,
+          year: projectData.year,
+          type: projectData.type,
+          blurb: projectData.blurb,
+          coverImageUrl: projectData.cover_image_url ?? null,
+          modules: projectData.modules ?? [],
+          outcomes: projectData.outcomes ?? [],
+          theme: projectData.theme ?? 'seminar',
+          media: mediaUrls,
+          confidential: projectData.confidential,
+          problem_users: projectData.problem_users,
+          jtbd: projectData.jtbd ?? [],
+          hypotheses: projectData.hypotheses ?? [],
+          mvp_in: projectData.mvp_in ?? [],
+          mvp_later: projectData.mvp_later ?? [],
+          current_status: projectData.current_status,
+          exec_snapshot: projectData.exec_snapshot ?? [],
+          decision_criteria: projectData.decision_criteria ?? [],
+          rd_timeline: projectData.rd_timeline ?? [],
+          rd_enablers: projectData.rd_enablers ?? [],
+          rd_frictions: projectData.rd_frictions ?? [],
+          rd_takeaways: projectData.rd_takeaways,
+          ipod_thesis: projectData.ipod_thesis,
+          ipod_levers: projectData.ipod_levers ?? [],
+          ipod_kpis: projectData.ipod_kpis ?? [],
+          ipod_insight: projectData.ipod_insight,
+          pm_persona: projectData.pm_persona ?? [],
+        };
+
         if (detailedData) {
           setProjects(prevProjects => {
             const newProjects = [...prevProjects];

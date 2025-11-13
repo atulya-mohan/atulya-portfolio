@@ -8,72 +8,79 @@ import Image from "next/image";
 import TypewriterEffect from "@/components/TypewriterEffect";
 import { getAboutData } from "@/lib/about/getAboutData";
 import { getMEProjectsData } from "@/lib/projects/getMEProjectsData";
+import { createClient } from "@supabase/supabase-js";
 import { supabaseServer } from "@/lib/supabase/server";
 
 export const runtime = "nodejs";
-export const revalidate = 60; // small cache; set to 0 or force-dynamic if you prefer
+// export const revalidate = 60; // optional small cache
 
 export default async function Home() {
-  // ----- Server-side Supabase (service role) -----
-  const supabase = supabaseServer();
-  if (!supabase) {
-    console.warn("[Home] Supabase server client unavailable. Falling back to safe placeholders.");
+  // ---- Build a DB client with a safe fallback ----
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+  // Prefer server (service role) if available; else fall back to anon client
+  const serverDb = supabaseServer();
+  const db = serverDb ?? (url && anon ? createClient(url, anon) : null);
+
+  if (!db) {
+    console.warn("[Home] No Supabase client available. Using empty placeholders for EM/SD/photos.");
   }
 
-  // ----- Fetch core data in parallel -----
-  const [aboutData, meProjectsData, photosRows, emProjectsRows, sdProjectsRows] = await Promise.all([
+  // ---- Fetch core data (About + ME via your working utils) ----
+  const [aboutData, meProjectsData] = await Promise.all([
     getAboutData(),
-    getMEProjectsData(), // keep this util exactly as-is
-    supabase
-      ? supabase
-          .from("photos")
-          .select("id, title, image_url")
-          .order("sort_index", { ascending: true })
-          .then(({ data }) => data ?? [])
-      : Promise.resolve([]),
-    supabase
-      ? supabase
-          .from("em_projects")
-          .select("id, title, cover_image_url")
-          .eq("confidential", false)
-          .order("sort_index", { ascending: true })
-          .then(({ data }) => data ?? [])
-      : Promise.resolve([]),
-    supabase
-      ? supabase
-          .from("sd_projects")
-          .select("id, title, cover_image_url")
-          .order("sort_index", { ascending: true })
-          .then(({ data }) => data ?? [])
-      : Promise.resolve([]),
+    getMEProjectsData(),
   ]);
 
-  // ----- Photos (Creative Pursuits) -----
+  // ---- Public reads for mini carousels & creative photos (use db fallback) ----
+  const [photosRows, emRows, sdRows] = await Promise.all([
+    db
+      ?.from("photos")
+      .select("id, title, image_url")
+      .order("sort_index", { ascending: true })
+      .then(({ data }) => data ?? [])
+      .catch(() => [] as any[]),
+    db
+      ?.from("em_projects")
+      .select("id, title, cover_image_url")
+      .eq("confidential", false)
+      .order("sort_index", { ascending: true })
+      .then(({ data }) => data ?? [])
+      .catch(() => [] as any[]),
+    db
+      ?.from("sd_projects")
+      .select("id, title, cover_image_url")
+      .order("sort_index", { ascending: true })
+      .then(({ data }) => data ?? [])
+      .catch(() => [] as any[]),
+  ]);
+
+  // ---- Creative pursuits card ----
   const creativePhotos: { src: string; alt: string }[] =
     (photosRows || []).map((p: any) => ({
       src: p.image_url,
       alt: p.title ?? "Creative pursuit",
     }));
-
   const creativeCardPhotos =
     creativePhotos.length > 0
       ? creativePhotos
       : [{ src: "/placeholder.png", alt: "Placeholder photo" }];
 
-  // ----- ME Projects preview (reuse working util’s shape) -----
+  // ---- ME projects preview (unchanged shape for MEProjectsCard) ----
   const meProjects = meProjectsData.map((p) => ({
     id: p.id,
     title: p.title,
     href: `/projects/mechanical-engineering/${p.id}`,
-    imageUrls: p.images, // MEProjectsCard expects imageUrls
+    imageUrls: p.images,
     summary: p.blurb,
     role: p.role,
     year: p.year,
     type: p.type,
   }));
 
-  // ----- EM / SD mini carousels -----
-  const EM_ITEMS: { title: string; href: string; imageUrl: string | null }[] = (emProjectsRows || []).map(
+  // ---- EM / SD mini carousels (restored) ----
+  const EM_ITEMS: { title: string; href: string; imageUrl: string | null }[] = (emRows || []).map(
     (p: any) => ({
       title: p.title,
       href: "/projects/engineering-management",
@@ -81,7 +88,7 @@ export default async function Home() {
     })
   );
 
-  const SD_ITEMS: { title: string; href: string; imageUrl: string | null }[] = (sdProjectsRows || []).map(
+  const SD_ITEMS: { title: string; href: string; imageUrl: string | null }[] = (sdRows || []).map(
     (p: any) => ({
       title: p.title,
       href: "/projects/software-design",
@@ -89,7 +96,7 @@ export default async function Home() {
     })
   );
 
-  // ----- Skill color mapping for tags -----
+  // ---- Skill color mapping for About widgets ----
   const skillColorMap: Record<string, string> = {};
   aboutData.skills.forEach((group: any) => {
     const color = group.color || "#FFB3BA";
@@ -108,17 +115,14 @@ export default async function Home() {
     return shuffled;
   };
 
-  // Flatten all skills with their colors and shuffle
   const allSkillsWithColors = shuffleArray(
     aboutData.skills.flatMap((group: any) =>
       group.skills.map((skill: string) => ({ skill, color: group.color || "#FFB3BA" }))
     )
   );
 
-  // Default tags (names should match your skills if you want color mapping)
   const defaultTags = ["Mechanical Design", "Prototyping", "Strategy", "Manufacturing"];
 
-  // Icon helper + fallbacks
   const toIcon = (name?: string | null) => {
     switch ((name ?? "").toLowerCase()) {
       case "camera":
@@ -169,12 +173,12 @@ export default async function Home() {
               className="hidden md:grid h-[calc(100dvh-var(--nav-h)-2*var(--gap))] grid-cols-6 [grid-auto-rows:var(--tile)]"
               style={{ gap: "var(--gap)" }}
             >
-              {/* ---------- Section 1.1 (LEFT column) ---------- */}
+              {/* ---------- LEFT column ---------- */}
               <section
                 className="col-span-3 row-span-5 grid"
                 style={{ gap: "var(--gap)", gridTemplateRows: "3fr 2fr 4fr" }}
               >
-                {/* 1.1.1 About Me */}
+                {/* About Me */}
                 <div className="relative flex h-full flex-col border border-black p-4 ">
                   <div className="mb-4 flex items-start justify-between">
                     <h3 className="font-header text-3xl uppercase">About Me</h3>
@@ -217,7 +221,7 @@ export default async function Home() {
                   </div>
                 </div>
 
-                {/* 1.1.2 Skills */}
+                {/* Skills */}
                 <div className="relative flex h-full flex-col border border-black p-4 ">
                   <div className="flex items-start justify-between">
                     <h2 className="font-header text-3xl uppercase">Skills</h2>
@@ -257,14 +261,14 @@ export default async function Home() {
                   </div>
                 </div>
 
-                {/* 1.1.3 bottom row → horizontal split */}
+                {/* EM / SD mini carousels */}
                 <div className="grid grid-cols-2" style={{ gap: "var(--gap)" }}>
                   <MiniProjectCarousel items={EM_ITEMS} />
                   <MiniProjectCarousel items={SD_ITEMS} />
                 </div>
               </section>
 
-              {/* ---------- Section 1.2 (RIGHT column) ---------- */}
+              {/* ---------- RIGHT column ---------- */}
               <section
                 className="col-span-3 row-span-5 grid"
                 style={{ gap: "var(--gap)", gridTemplateRows: "5fr 2fr" }}
@@ -273,7 +277,7 @@ export default async function Home() {
                 <CreativePursuitsCard photos={creativeCardPhotos} />
               </section>
 
-              {/* ---------- Section 2 (BOTTOM band) ---------- */}
+              {/* ---------- BOTTOM band ---------- */}
               <div className="col-span-1 row-start-6 border border-black p-3 ">
                 <div className="grid h-full grid-rows-[auto,1fr]">
                   <h3 className="font-header text-2xl uppercase">Interests</h3>
@@ -345,7 +349,8 @@ export default async function Home() {
                 </div>
               </div>
             </div>
-            {/* Mobile view with cut corners */}
+
+            {/* Mobile */}
             <div className="md:hidden space-y-4">
               <div className="border border-black p-4 ">About Me</div>
               <div className="border border-black p-4 ">Skills</div>

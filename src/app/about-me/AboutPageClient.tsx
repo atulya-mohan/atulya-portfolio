@@ -17,7 +17,12 @@ interface AboutPageClientProps {
 
 export default function AboutPageClient({ aboutData, skillsGroups, fallbackInterests }: AboutPageClientProps) {
   const [selectedSegment, setSelectedSegment] = useState<TimelineSeg | null>(null);
-  const { profile, timeline, interests, contacts } = aboutData;
+  
+  // Safely destructure with defaults to prevent errors
+  const profile = aboutData?.profile ?? { name: null, bio: null, photoUrl: null };
+  const timeline = aboutData?.timeline ?? { top: [], bottom: [] };
+  const interests = aboutData?.interests ?? [];
+  const contacts = aboutData?.contacts ?? [];
 
   const profilePhoto = profile?.photoUrl ?? '/portrait.jpg';
   const fullBio = profile?.bio ?? 'Bio not available';
@@ -256,7 +261,7 @@ export default function AboutPageClient({ aboutData, skillsGroups, fallbackInter
               <div className="border border-black p-3">
                 <h3 className="mb-2 font-header text-2xl uppercase">Contact Me</h3>
                 <div className="flex items-center gap-2">
-                  {(contacts.length ? contacts : [
+                  {((contacts && contacts.length > 0) ? contacts : [
                     { label: 'LinkedIn', url: 'https://www.linkedin.com/', icon_name: 'Linkedin' },
                     { label: 'Email', url: 'mailto:you@example.com', icon_name: 'Mail' },
                   ]).map((c: any) => {
@@ -279,7 +284,7 @@ export default function AboutPageClient({ aboutData, skillsGroups, fallbackInter
               <div className="border border-black p-3">
                 <h3 className="mb-2 font-header text-2xl uppercase">Interests</h3>
                 <div className="grid grid-cols-5 gap-1.5">
-                  {(interests.length ? interests : fallbackInterests).map((it: any, i: number) => {
+                  {((interests && interests.length > 0) ? interests : fallbackInterests).map((it: any, i: number) => {
                     const Icon = toIcon(it.icon_name);
                     return (
                       <div
@@ -304,8 +309,8 @@ export default function AboutPageClient({ aboutData, skillsGroups, fallbackInter
                   <TriBandTimeline
                     startYear={2020}
                     endYear={2026}
-                    topSegments={timeline.top}
-                    bottomSegments={timeline.bottom}
+                    topSegments={timeline?.top ?? []}
+                    bottomSegments={timeline?.bottom ?? []}
                     yearStyle="axis"
                     pad={25}
                     iconSize={25}

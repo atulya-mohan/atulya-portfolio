@@ -6,12 +6,26 @@ import AboutPageClient from './AboutPageClient';
 export const runtime = 'nodejs';
 
 export default async function AboutPage() {
-  const aboutData = await getAboutData();
-  const { skills } = aboutData;
+  let aboutData;
+  try {
+    aboutData = await getAboutData();
+  } catch (error) {
+    console.error('[AboutPage] Error fetching about data:', error);
+    // Return fallback data structure
+    aboutData = {
+      profile: { name: null, bio: null, photoUrl: null },
+      timeline: { top: [], bottom: [] },
+      skills: [],
+      interests: [],
+      contacts: [],
+    };
+  }
+  
+  const { skills = [] } = aboutData ?? { skills: [] };
 
   // Transform skills data for SkillsAccordion component
   const skillsGroups: Record<string, { skills: string[]; color: string }> =
-    skills.length
+    skills && skills.length > 0
       ? skills.reduce((acc, g) => {
           acc[g.name] = { 
             skills: g.skills, 

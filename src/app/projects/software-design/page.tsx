@@ -4,7 +4,8 @@ import Image from 'next/image';
 import Link from 'next/link'; // Keep for internal links
 import React, { useState, useMemo, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, ArrowUpRight } from 'lucide-react';
-import { getSDProjectsData, type SDProject } from '@/lib/projects/getSDProjectsData';
+import type { SDProject } from '@/lib/projects/getSDProjectsData';
+import { getSupabaseBrowser } from '@/lib/supabase/browser';
 
 export default function ClubscapePage() {
   const [phoneSlide, setPhoneSlide] = useState(0);
@@ -26,9 +27,67 @@ export default function ClubscapePage() {
   useEffect(() => {
     const fetchProject = async () => {
       setLoading(true);
+      const supabase = getSupabaseBrowser();
+      
+      if (!supabase) {
+        console.warn('[ClubscapePage] Supabase client unavailable. Displaying empty state.');
+        setProject(null);
+        setLoading(false);
+        return;
+      }
+
       try {
-        const data = await getSDProjectsData();
-        setProject(data);
+        // Fetch the first (and only) SD project
+        const { data: projectData, error: projectError } = await supabase
+          .from('sd_projects')
+          .select('*')
+          .order('sort_index', { ascending: true })
+          .limit(1)
+          .maybeSingle();
+
+        if (projectError) {
+          console.error('Error fetching SD project:', projectError);
+          setProject(null);
+          setLoading(false);
+          return;
+        }
+
+        if (!projectData) {
+          console.log('No SD project found');
+          setProject(null);
+          setLoading(false);
+          return;
+        }
+
+        // Fetch its images
+        const { data: imagesData, error: imagesError } = await supabase
+          .from('sd_project_images')
+          .select('image_url, label, sort_index')
+          .eq('project_id', projectData.id)
+          .order('sort_index', { ascending: true });
+
+        if (imagesError) {
+          console.error('Error fetching SD project images:', imagesError);
+        }
+
+        // Transform to SDProject format
+        const transformedProject: SDProject = {
+          id: projectData.id,
+          title: projectData.title,
+          blurb: projectData.blurb,
+          status: projectData.status,
+          techStack: projectData.tech_stack ?? [],
+          problem: projectData.problem,
+          solution: projectData.solution,
+          keyFeatures: projectData.key_features ?? [],
+          links: projectData.links as SDProject['links'],
+          images: (imagesData ?? []).map(img => ({
+            label: img.label,
+            src: img.image_url,
+          })),
+        };
+
+        setProject(transformedProject);
       } catch (error) {
         console.error('Failed to fetch project:', error);
         setProject(null);

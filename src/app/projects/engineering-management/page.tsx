@@ -33,7 +33,7 @@ function Pill({ label, value }: { label: string; value: string }) {
 =========================================================================== */
 function ModuleRenderer({ moduleType, project }: { moduleType: string; project: EMProject }) {
   const moduleTitleClass = "font-mono font-bold text-black mb-1 text-sm";
-  const moduleBodyClass = "font-body text-zinc-700 text-xs";
+  const moduleBodyClass = "font-body text-zinc-700 text-sm";
   const moduleListClass = `space-y-0.5 ${moduleBodyClass}`;
 
   switch (moduleType) {

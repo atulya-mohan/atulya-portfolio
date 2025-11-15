@@ -27,6 +27,9 @@ const kosugiMaru = Kosugi_Maru({
 export const metadata = {
   title: "Atulya Mohan",
   description: "Portfolio",
+  icons: {
+    icon: '/favicon.svg',
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

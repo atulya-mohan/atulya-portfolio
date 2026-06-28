@@ -1,0 +1,37 @@
+[
+  {
+    "id": "bebf8465-9417-4a78-a97d-63328339d159",
+    "name": "CAD & Simulation",
+    "sort_index": 1,
+    "created_at": "2025-10-18T15:51:50.072156+00:00",
+    "color": "#FFB3BA"
+  },
+  {
+    "id": "8953b21b-13fb-4a33-84fc-e6ca59440e94",
+    "name": "Software",
+    "sort_index": 2,
+    "created_at": "2025-10-18T15:51:50.072156+00:00",
+    "color": "#BAFFC9"
+  },
+  {
+    "id": "92c89c0f-bdf5-45ff-9b8e-8c2a98000980",
+    "name": "Computer Environments",
+    "sort_index": 3,
+    "created_at": "2025-10-18T15:51:50.072156+00:00",
+    "color": "#BAE1FF"
+  },
+  {
+    "id": "3b96a515-78a4-4517-aa7f-e62d17c3c658",
+    "name": "Manufacturing Processes",
+    "sort_index": 4,
+    "created_at": "2025-10-18T15:51:50.072156+00:00",
+    "color": "#E0BBE4"
+  },
+  {
+    "id": "83225134-8d2e-4a9c-ba66-8048ef747c0c",
+    "name": "Programming Languages",
+    "sort_index": 5,
+    "created_at": "2025-10-18T15:51:50.072156+00:00",
+    "color": "#FFFFBA"
+  }
+]

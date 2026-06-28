@@ -1,367 +1,332 @@
-import MiniProjectCarousel from "@/components/MiniProjectCarousel";
-import { Music, Camera, Gamepad2, Plane, Wrench, Mail, Linkedin } from "lucide-react";
-import MEProjectsCard from "@/components/MEProjectsCard";
-import CreativePursuitsCard from "@/components/CreativePursuitsCard";
-import TriBandTimeline from "@/components/TriBandTimeline";
+import { getContactIcon } from "@/lib/contact-icons";
+import CareerDatasheet from "@/components/CareerDatasheet";
+import AnimatedSection from "@/components/AnimatedSection";
+import SkillsMarquee from "@/components/SkillsMarquee";
+import MEHeroCarousel from "@/components/MEHeroCarousel";
+import EMProjectCarousel from "@/components/EMProjectCarousel";
+import TypewriterEffect from "@/components/TypewriterEffect";
 import Link from "next/link";
 import Image from "next/image";
-import TypewriterEffect from "@/components/TypewriterEffect";
 import { getAboutData } from "@/lib/about/getAboutData";
 import { getMEProjectsData } from "@/lib/projects/getMEProjectsData";
-import { createClient } from "@supabase/supabase-js";
+import { blurDataURLs } from "@/lib/blur-utils";
 
-// --- DATA (Hard-coded items removed) ---
-// const EM_ITEMS = [ ... ];
-// const SD_ITEMS = [ ... ];
+import type { EMProjectData, SDProjectData } from "@/lib/types";
+import emProjectsJson from "@/data/em-projects.json";
+import sdProjectsJson from "@/data/sd-projects.json";
 
-export default async function Home() {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-  const supabase =
-    supabaseUrl && supabaseAnonKey
-      ? createClient(supabaseUrl, supabaseAnonKey)
-      : null;
+const emProjects = emProjectsJson as EMProjectData[];
+const sdProjects = sdProjectsJson as SDProjectData[];
 
-  if (!supabase) {
-    console.warn('[Home] Missing Supabase environment variables. Falling back to static data.');
-  }
+export default function Home() {
+  const aboutData = getAboutData();
 
-  const aboutData = await getAboutData();
-
-  let creativePhotos: { src: string; alt: string }[] = [];
-
-  if (supabase) {
-    const { data: photosData } = await supabase
-      .from('photos')
-      .select('id, title, image_url')
-      .order('sort_index', { ascending: true });
-
-    creativePhotos = (photosData || []).map((p: any) => ({
-      src: p.image_url,
-      alt: p.title ?? 'Creative pursuit',
-    }));
-  }
-
-  // Fetch ME Projects using the same function as the expanded page
-  const meProjectsData = await getMEProjectsData();
-  
-  // Transform the data to match MEProjectsCard component's expected format
-  const meProjects = meProjectsData.map((p) => ({
+  const meProjectsData = getMEProjectsData();
+  const meProjects = meProjectsData.slice(0, 4).map((p) => ({
     id: p.id,
     title: p.title,
-    href: `/projects/mechanical-engineering/${p.id}`,
-    imageUrls: p.images,
+    href: `/projects/mechanical-engineering#${p.id}`,
+    imageUrl: p.images?.[0] || null,
     summary: p.blurb,
     role: p.role,
     year: p.year,
     type: p.type,
   }));
 
-  // 👇 --- NEW: Fetch EM Projects ---
-  let EM_ITEMS: { title: string; href: string; imageUrl: string | null }[] = [];
+  const emItems = emProjects.filter(p => !p.confidential).map(p => ({
+    title: p.title,
+    href: `/projects/engineering-management#${p.id}`,
+    imageUrl: p.cover_image_url,
+    summary: p.blurb,
+  }));
 
-  if (supabase) {
-    const { data: emProjectsData } = await supabase
-      .from('em_projects')
-      .select('id, title, cover_image_url')
-      .eq('confidential', false)
-      .order('sort_index', { ascending: true });
+  const sdItems = sdProjects.map(p => ({
+    title: p.title,
+    href: `/projects/software-design#${p.id}`,
+    imageUrl: p.cover_image_url,
+    summary: p.blurb,
+  }));
 
-    EM_ITEMS = (emProjectsData || []).map((p: any) => ({
-      title: p.title,
-      href: '/projects/engineering-management', // Links to your main EM page
-      imageUrl: p.cover_image_url,
-    }));
-  }
-
-  // 👇 --- NEW: Fetch SD Projects ---
-  let SD_ITEMS: { title: string; href: string; imageUrl: string | null }[] = [];
-
-  if (supabase) {
-    const { data: sdProjectsData } = await supabase
-      .from('sd_projects')
-      .select('id, title, cover_image_url')
-      .order('sort_index', { ascending: true });
-
-    SD_ITEMS = (sdProjectsData || []).map((p: any) => ({
-      title: p.title,
-      href: '/projects/software-design', // Links to your main SD page
-      imageUrl: p.cover_image_url,
-    }));
-  }
-  // 👆 --- END NEW DATA ---
-
-  // --- UPDATED: Create a map of skill to color based on skill groups ---
-  const skillColorMap: Record<string, string> = {};
-  aboutData.skills.forEach(group => {
-    const color = group.color || '#FFB3BA'; // Default pastel pink
-    group.skills.forEach(skill => {
-      skillColorMap[skill] = color;
-    });
-  });
-
-  // Shuffle function using Fisher-Yates algorithm
-  const shuffleArray = <T,>(array: T[]): T[] => {
-    const shuffled = [...array];
-    for (let i = shuffled.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-    }
-    return shuffled;
-  };
-
-  // Flatten all skills with their colors and shuffle
-  const allSkillsWithColors = shuffleArray(
-    aboutData.skills.flatMap(group => 
-      group.skills.map(skill => ({ skill, color: group.color || '#FFB3BA' }))
-    )
+  const allSkills = aboutData.skills.flatMap(group =>
+    group.skills.map(skill => ({ skill, color: group.color || '#FFB3BA' }))
   );
 
-  // Default tags with their colors from the skill groups
-  const defaultTags = ['Mechanical Design', 'Prototyping', 'Strategy', 'Manufacturing'];
-
-  const creativeCardPhotos =
-    creativePhotos.length > 0
-      ? creativePhotos
-      : [{ src: '/placeholder.png', alt: 'Placeholder photo' }];
-
-  // --- Helper function and fallbacks from about-me page ---
-  const toIcon = (name?: string | null) => {
-    switch ((name ?? '').toLowerCase()) {
-      case 'camera':   return Camera;
-      case 'gamepad2': return Gamepad2;
-      case 'plane':    return Plane;
-      case 'wrench':   return Wrench;
-      case 'music':
-      default:         return Music;
-    }
-  };
-
-  const fallbackInterests = [
-    { label: 'Music',   icon_name: 'Music', color: '#FFB3BA' },
-    { label: 'Camera',  icon_name: 'Camera', color: '#BAFFC9' },
-    { label: 'Gaming',  icon_name: 'Gamepad2', color: '#BAE1FF' },
-    { label: 'Travel',  icon_name: 'Plane', color: '#FFFFBA' },
-    { label: 'Tools',   icon_name: 'Wrench', color: '#E0BBE4' },
-  ];
+  const shortBio = aboutData.profile.bio
+    ? aboutData.profile.bio.split('. ').slice(0, 3).join('. ') + '.'
+    : '';
 
   return (
-    <>
+    <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)]">
       <TypewriterEffect />
-      <div className={`fixed inset-0 h-full w-full overflow-auto bg-[#F0F2E6] text-black`}>
-        <section
-          className="px-4"
-          style={
-            {
-              "--nav-h": "56px",
-              "--gap": "12px",
-              "--cols": 6,
-              "--rows": 6,
-              "--pad": "16px",
-              "--tile":
-                "min(" + "calc((100vw - (2*var(--pad)) - ((var(--cols) - 1) * var(--gap))) / var(--cols))," +"calc((100dvh - var(--nav-h) - (2*var(--gap)) - ((calc(var(--rows) - 1)) * var(--gap))) / var(--rows))" +")",
-            } as React.CSSProperties
-          }
-        >
-          <div className="pt-[calc(var(--nav-h)+var(--gap))] pb-[var(--gap)]">
-            <div
-              className="hidden md:grid h-[calc(100dvh-var(--nav-h)-2*var(--gap))] grid-cols-6 [grid-auto-rows:var(--tile)]"
-              style={{ gap: "var(--gap)" }}
-            >
-              {/* ---------- Section 1.1 (LEFT column) ---------- */}
-              <section
-                className="col-span-3 row-span-5 grid"
-                style={{ gap: "var(--gap)", gridTemplateRows: "3fr 2fr 4fr" }}
-              >
-                {/* 1.1.1 About Me */}
-                <div className="relative flex h-full flex-col border border-black p-4 ">
-                  <div className="mb-4 flex items-start justify-between">
-                    <h3 className="font-header text-3xl uppercase">About Me</h3>
-                    <Link
-                      href="/about-me"
-                      className="border border-black bg-transparent p-1.5 text-black transition-colors hover:border-[#FF4F00] hover:bg-[#FF4F00] hover:text-white"
-                      aria-label="Expand About Me"
-                    >
-                      <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <path d="M7 17L17 7M17 7H7M17 7V17" />
-                      </svg>
-                    </Link>
-                  </div>
-                  <div className="grid items-start gap-4" style={{ gridTemplateColumns: 'max-content 1fr' }}>
-                    <div className="shrink-0">
-                      <div className="relative h-[var(--about-h,7rem)] w-[var(--about-h,7rem)] overflow-hidden border border-black bg-zinc-200">
-                        {aboutData.profile.photoUrl ? (
-                          <Image 
-                            src={aboutData.profile.photoUrl} 
-                            alt="Profile photo" 
-                            fill 
-                            className="object-cover" 
-                          />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center text-zinc-400">No photo</div>
-                        )}
-                      </div>
-                    </div>
-                    <div className="min-w-0">
-                      <p className="font-body text-sm leading-relaxed text-zinc-800 h-[var(--about-h,7rem)] overflow-hidden [display:-webkit-box] [-webkit-line-clamp:5] [-webkit-box-orient:vertical]">
-                        {aboutData.profile.bio || "Bio not available"}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="mt-auto flex flex-wrap gap-2 pt-4">
-                    {defaultTags.map((t) => (
-                      <span 
-                        key={t} 
-                        className="border border-black/50 bg-transparent px-3 py-1 text-xs font-mono text-black"
-                        style={{ backgroundColor: skillColorMap[t] || '#F0F2E6' }}
-                      >
-                        {t}
-                      </span>
-                    ))}
-                  </div>
-                </div>
 
-                {/* 1.1.2 Skills */}
-                <div className="relative flex h-full flex-col border border-black p-4 ">
-                  <div className="flex items-start justify-between">
-                    <h2 className="font-header text-3xl uppercase">Skills</h2>
-                    <Link
-                      href="/about-me"
-                      className="border border-black bg-transparent p-1.5 text-black transition-colors hover:border-[#FF4F00] hover:bg-[#FF4F00] hover:text-white"
-                      aria-label="Expand Skills"
-                    >
-                      <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <path d="M7 17L17 7M17 7H7M17 7V17" />
-                      </svg>
-                    </Link>
-                  </div>
-                  <div className="mt-2 grid flex-1 grid-cols-[auto,1fr] items-center gap-2">
-                    <div className="relative min-w-0">
-                      <div className="pointer-events-none absolute inset-y-0 left-0 w-8" />
-                      <div className="pointer-events-none absolute inset-y-0 right-0 w-8" />
-                      <div
-                        aria-label="skills scroller"
-                        className="h-8 flex items-center gap-2 pr-10 overflow-x-auto overflow-y-hidden scroll-smooth whitespace-nowrap touch-pan-x [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-                      >
-                        {allSkillsWithColors.length > 0 ? (
-                          allSkillsWithColors.map(({ skill, color }, idx) => (
-                            <span
-                              key={`${skill}-${idx}`}
-                              className="inline-flex h-7 shrink-0 items-center border border-black/50 bg-transparent px-3 text-xs font-mono text-black"
-                              style={{ backgroundColor: color }}
-                            >
-                              {skill}
-                            </span>
-                          ))
-                        ) : (
-                          <span className="text-xs text-zinc-400">No skills added yet</span>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                </div>
+      {/* ═══════════════════════════════════════════════════════════
+          HERO — Full-bleed film photograph
+          ═══════════════════════════════════════════════════════════ */}
+      <section className="relative h-screen w-full overflow-hidden">
+        <Image
+          src="/images/photos/my-best-shot.jpg"
+          alt="Mount Rainier valley at golden hour"
+          fill
+          className="object-cover object-center"
+          priority
+          sizes="100vw"
+          quality={85}
+          placeholder="blur"
+          blurDataURL={blurDataURLs.heroPhoto}
+        />
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60" />
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-black/30 via-transparent to-transparent" />
 
-                {/* 1.1.3 bottom row → horizontal split */}
-                <div className="grid grid-cols-2" style={{ gap: "var(--gap)" }}>
-                  <MiniProjectCarousel items={EM_ITEMS} />
-                  <MiniProjectCarousel items={SD_ITEMS} />
-                </div>
-              </section>
+        <div className="absolute inset-x-0 top-0 pt-24 md:pt-28 px-6 md:px-12 lg:px-20">
+          <h1 className="font-header text-6xl uppercase tracking-tight text-white md:text-8xl lg:text-[7rem] leading-[0.85]">
+            Atulya<br />Mohan
+          </h1>
+          <div className="w-12 h-[3px] bg-[var(--accent)] mt-4 mb-3" />
+          <p className="font-mono text-[11px] uppercase tracking-[0.25em] text-white/70">
+            Mechanical Engineer &bull; Product Developer &bull; CMU ETIM
+          </p>
+        </div>
 
-              {/* ---------- Section 1.2 (RIGHT column) ---------- */}
-              <section
-                className="col-span-3 row-span-5 grid"
-                style={{ gap: "var(--gap)", gridTemplateRows: "5fr 2fr" }}
-              >
-                <MEProjectsCard items={meProjects} />
-                <CreativePursuitsCard photos={creativeCardPhotos} />
-              </section>
-
-              {/* ---------- Section 2 (BOTTOM band) ---------- */}
-              <div className="col-span-1 row-start-6 border border-black p-3 ">
-                <div className="grid h-full grid-rows-[auto,1fr]">
-                  <h3 className="font-header text-2xl uppercase">Interests</h3>
-                  <div className="flex items-center justify-center">
-                    <div className="grid grid-cols-5 gap-1.5">
-                      {(aboutData.interests.length
-                        ? aboutData.interests
-                        : fallbackInterests
-                      ).map((it, i) => {
-                        const Icon = toIcon(it.icon_name);
-                        return (
-                          <div
-                            key={`${it.label}-${i}`}
-                            className="flex h-9 w-9 items-center justify-center border border-black/50"
-                            style={{ backgroundColor: it.color || '#FFB3BA' }}
-                            title={it.label}
-                          >
-                            <Icon className="h-4 w-4 text-black" />
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="col-span-4 row-start-6 border border-black p-3 flex flex-col ">
-                <h3 className="font-header text-2xl uppercase mb-2">Timeline</h3>
-                <div className="flex flex-row h-full items-center">
-                  <div className="flex-1">
-                    <TriBandTimeline
-                      startYear={2020}
-                      endYear={2026}
-                      topSegments={aboutData.timeline.top}
-                      bottomSegments={aboutData.timeline.bottom}
-                      yearStyle="axis"
-                      pad={15}
-                      iconSize={15}
-                    />
-                  </div>
-                </div>
-              </div>
-              <div className="col-span-1 row-start-6 border border-black p-3 ">
-                <div className="grid h-full grid-rows-[auto,1fr]">
-                  <h3 className="font-header text-2xl uppercase">Contact</h3>
-                  <div className="pt-2 flex items-start justify-start gap-2">
-                    {aboutData.contacts.length > 0 ? (
-                      aboutData.contacts.map((contact) => {
-                        const normalizedIcon = contact.icon_name?.toLowerCase().trim() || '';
-                        const iconMap: Record<string, typeof Linkedin> = {
-                          'linkedin': Linkedin,
-                          'email': Mail,
-                          'mail': Mail,
-                          'envelope': Mail,
-                        };
-                        const IconComponent = iconMap[normalizedIcon] || Linkedin;
-                        return (
-                          <a
-                            key={contact.label}
-                            href={contact.url}
-                            className="flex h-10 w-10 items-center justify-center border-2 border-black p-2 text-black transition-colors hover:border-[#FF4F00] hover:bg-[#FF4F00] hover:text-white"
-                            aria-label={contact.label}
-                            title={contact.label}
-                          >
-                            <IconComponent className="h-5 w-5" />
-                          </a>
-                        );
-                      })
-                    ) : (
-                      <span className="text-xs text-zinc-400">No contacts</span>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </div>
-            {/* Mobile view with cut corners */}
-            <div className="md:hidden space-y-4">
-               <div className="border border-black p-4 ">About Me</div>
-               <div className="border border-black p-4 ">Skills</div>
-               <div className="border border-black p-4 ">Projects</div>
-               <div className="border border-black p-4 ">Timeline</div>
-            </div>
+        <div className="absolute bottom-0 left-0 px-6 pb-8 md:px-12 md:pb-12 lg:px-20">
+          <p className="font-body text-base text-white/90 max-w-md leading-relaxed mb-4">
+            I design hardware, manage engineering teams, and build software on the side.
+          </p>
+          <div className="flex items-center gap-3">
+            {aboutData.contacts.map((contact) => {
+              const IC = getContactIcon(contact.icon_name);
+              return (
+                <a key={contact.label} href={contact.url} target="_blank" rel="noopener noreferrer"
+                  className="icon-pop flex h-9 w-9 items-center justify-center border border-white/50 text-white transition-colors hover:border-white hover:bg-white hover:text-black"
+                  aria-label={contact.label}>
+                  <IC className="h-4 w-4" />
+                </a>
+              );
+            })}
+            <Link href="/resume"
+              className="btn-press flex h-9 items-center bg-[var(--accent)] px-5 font-mono text-xs uppercase tracking-widest text-white transition-opacity hover:opacity-90">
+              Resume
+            </Link>
           </div>
-        </section>
-      </div>
-    </>
+        </div>
+
+        <div className="absolute bottom-8 right-6 md:right-12 lg:right-20 flex flex-col items-center gap-2 [writing-mode:vertical-rl]">
+          <span className="font-mono text-[10px] uppercase tracking-[0.3em] text-white/50">scroll</span>
+          <span className="block h-8 w-px bg-white/40 animate-pulse" />
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════════════
+          ABOUT
+          ═══════════════════════════════════════════════════════════ */}
+      <AnimatedSection className="mx-auto max-w-7xl px-6 py-20 md:px-12 md:py-28">
+        <div className="grid gap-8 md:grid-cols-[140px_1fr] md:gap-10 items-start">
+          <div className="relative h-36 w-36 overflow-hidden border border-[var(--border)] md:h-[160px] md:w-full">
+            {aboutData.profile.photoUrl && (
+              <Image src={aboutData.profile.photoUrl} alt="Atulya Mohan" fill className="object-cover" sizes="160px" placeholder="blur" blurDataURL={blurDataURLs.profilePhoto} />
+            )}
+          </div>
+          <div>
+            <p className="font-body text-lg leading-[1.8] md:text-xl md:leading-[1.8] max-w-[60ch]">
+              {shortBio}
+            </p>
+            <Link href="/about-me" className="link-underline mt-4 inline-block font-mono text-xs uppercase tracking-widest text-[var(--accent)]">
+              Full bio &rarr;
+            </Link>
+          </div>
+        </div>
+      </AnimatedSection>
+
+      {/* ═══════════════════════════════════════════════════════════
+          SKILLS — Two-row marquee, opposite directions
+          ═══════════════════════════════════════════════════════════ */}
+      <SkillsMarquee skills={allSkills} />
+
+      {/* ═══════════════════════════════════════════════════════════
+          MECHANICAL ENGINEERING — Hero carousel + arrows
+          Limited to 4 projects
+          ═══════════════════════════════════════════════════════════ */}
+      <AnimatedSection className="project-me px-6 pt-20 pb-10 md:px-12 md:pt-28 md:pb-16">
+        <div className="mx-auto max-w-7xl">
+          <div className="flex items-end justify-between mb-8">
+            <div>
+              <span className="font-mono text-[10px] uppercase tracking-widest text-[var(--project-accent)] block mb-1">01</span>
+              <h2 className="font-header text-4xl uppercase tracking-tight md:text-5xl">Mechanical Engineering</h2>
+            </div>
+            <Link href="/projects/mechanical-engineering" className="link-underline font-mono text-sm uppercase tracking-wider text-[var(--project-accent)]">
+              View All &rarr;
+            </Link>
+          </div>
+
+          <MEHeroCarousel projects={meProjects} />
+        </div>
+      </AnimatedSection>
+
+      {/* ═══════════════════════════════════════════════════════════
+          ENGINEERING MANAGEMENT — 3-item carousel
+          ═══════════════════════════════════════════════════════════ */}
+      <AnimatedSection className="project-em px-6 py-10 md:px-12 md:py-16">
+        <div className="mx-auto max-w-7xl">
+          <div className="flex items-end justify-between mb-8">
+            <div>
+              <span className="font-mono text-[10px] uppercase tracking-widest text-[var(--project-accent)] block mb-1">02</span>
+              <h2 className="font-header text-3xl uppercase tracking-tight md:text-4xl">Engineering Management</h2>
+            </div>
+            <Link href="/projects/engineering-management" className="link-underline font-mono text-sm uppercase tracking-wider text-[var(--project-accent)]">
+              View All &rarr;
+            </Link>
+          </div>
+
+          <EMProjectCarousel items={emItems} />
+        </div>
+      </AnimatedSection>
+
+      {/* ═══════════════════════════════════════════════════════════
+          SOFTWARE DESIGN — Featured spotlight
+          ═══════════════════════════════════════════════════════════ */}
+      <AnimatedSection className="project-sd px-6 py-10 md:px-12 md:py-16">
+        <div className="mx-auto max-w-7xl">
+          <div className="flex items-end justify-between mb-8">
+            <div>
+              <span className="font-mono text-[10px] uppercase tracking-widest text-[var(--project-accent)] block mb-1">03</span>
+              <h2 className="font-header text-3xl uppercase tracking-tight md:text-4xl">Software Design</h2>
+            </div>
+            <Link href="/projects/software-design" className="link-underline font-mono text-sm uppercase tracking-wider text-[var(--project-accent)]">
+              View All &rarr;
+            </Link>
+          </div>
+
+          {sdItems[0] && (
+            <Link
+              href={sdItems[0].href}
+              className="group block border border-[var(--border)] overflow-hidden transition-[border-color,transform] hover:border-[var(--project-accent)] active:scale-[0.96]"
+            >
+              <div className="grid md:grid-cols-[3fr_2fr]">
+                {/* Cover image */}
+                <div className="relative aspect-[16/10] md:aspect-auto md:min-h-[320px] overflow-hidden">
+                  {sdItems[0].imageUrl && (sdItems[0].imageUrl.startsWith('/') || sdItems[0].imageUrl.startsWith('http')) && (
+                    <Image
+                      src={sdItems[0].imageUrl}
+                      alt={sdItems[0].title}
+                      fill
+                      className="object-cover transition-transform duration-700 group-hover:scale-[1.03]"
+                      sizes="(max-width: 768px) 100vw, 60vw"
+                      placeholder="blur"
+                      blurDataURL={blurDataURLs.sdCover}
+                    />
+                  )}
+                  <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/30 to-transparent md:bg-gradient-to-r md:from-transparent md:to-black/20" />
+                </div>
+
+                {/* Text panel */}
+                <div className="p-6 md:p-8 lg:p-10 flex flex-col justify-center">
+                  <span className="font-mono text-[10px] uppercase tracking-widest text-[var(--project-accent)] mb-3">
+                    Featured Project
+                  </span>
+                  <h3 className="font-header text-2xl md:text-3xl uppercase text-[var(--foreground)] leading-[0.95]">
+                    {sdItems[0].title}
+                  </h3>
+                  {sdItems[0].summary && (
+                    <p className="font-body text-sm text-[var(--muted)] mt-3 leading-relaxed max-w-[45ch]">
+                      {sdItems[0].summary}
+                    </p>
+                  )}
+                  <span className="mt-5 inline-block font-mono text-xs uppercase tracking-widest text-[var(--project-accent)] group-hover:underline">
+                    View Project &rarr;
+                  </span>
+                </div>
+              </div>
+
+              <div className="h-[2px] bg-[var(--project-accent)] scale-x-0 origin-left transition-transform duration-300 group-hover:scale-x-100" />
+            </Link>
+          )}
+
+          {/* Additional SD projects (if more than one) */}
+          {sdItems.length > 1 && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
+              {sdItems.slice(1).map((item, idx) => (
+                <Link
+                  key={idx}
+                  href={item.href}
+                  className="group relative overflow-hidden border border-[var(--border)] transition-[border-color,transform] hover:border-[var(--project-accent)] active:scale-[0.96]"
+                >
+                  <div className="relative aspect-[16/10] overflow-hidden">
+                    {item.imageUrl && (item.imageUrl.startsWith('/') || item.imageUrl.startsWith('http')) && (
+                      <Image
+                        src={item.imageUrl}
+                        alt={item.title}
+                        fill
+                        className="object-cover transition-transform duration-500 group-hover:scale-105"
+                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                        placeholder="blur"
+                        blurDataURL={blurDataURLs.sdCover}
+                      />
+                    )}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+                    <div className="absolute bottom-0 left-0 right-0 p-4">
+                      <h3 className="font-header text-sm uppercase text-white leading-tight">{item.title}</h3>
+                    </div>
+                  </div>
+                  {item.summary && (
+                    <div className="p-3">
+                      <p className="font-mono text-[10px] text-[var(--muted)] line-clamp-2 leading-relaxed">{item.summary}</p>
+                    </div>
+                  )}
+                  <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-[var(--project-accent)] scale-x-0 origin-left transition-transform duration-300 group-hover:scale-x-100" />
+                </Link>
+              ))}
+            </div>
+          )}
+        </div>
+      </AnimatedSection>
+
+      {/* ═══════════════════════════════════════════════════════════
+          TIMELINE — Career rendered as a dimensioned mechanical drawing
+          ═══════════════════════════════════════════════════════════ */}
+      <AnimatedSection className="border-t border-[var(--border-light)] px-6 pt-20 pb-12 md:px-12 md:pt-28 md:pb-16">
+        <div className="mx-auto max-w-7xl">
+          <CareerDatasheet fullStoryHref="/about-me" />
+        </div>
+      </AnimatedSection>
+
+      {/* ═══════════════════════════════════════════════════════════
+          FOOTER
+          ═══════════════════════════════════════════════════════════ */}
+      <footer className="border-t border-[var(--border)] px-6 py-8 md:px-12 md:py-10">
+        <div className="mx-auto max-w-7xl flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
+          {/* Left — name + tagline */}
+          <div className="flex items-baseline gap-3">
+            <h2 className="font-header text-xl uppercase tracking-tight md:text-2xl leading-none">
+              Atulya Mohan
+            </h2>
+            <span className="hidden md:inline font-mono text-[10px] uppercase tracking-widest text-[var(--muted)]">
+              Engineer &bull; Builder &bull; CMU&nbsp;ETIM
+            </span>
+          </div>
+
+          {/* Center — social icons */}
+          <div className="flex items-center gap-2">
+            {aboutData.contacts.map((contact) => {
+              const IC = getContactIcon(contact.icon_name);
+              return (
+                <a key={contact.label} href={contact.url} target="_blank" rel="noopener noreferrer"
+                  className="icon-pop flex h-9 w-9 items-center justify-center border border-[var(--border)] text-[var(--muted)] transition-colors hover:bg-[var(--accent)] hover:border-[var(--accent)] hover:text-white"
+                  aria-label={contact.label}>
+                  <IC className="h-4 w-4" />
+                </a>
+              );
+            })}
+            <a href="mailto:mohan.atulya26@gmail.com"
+              className="link-underline ml-2 font-mono text-xs text-[var(--muted)] hover:text-[var(--accent)] transition-colors">
+              mohan.atulya26@gmail.com
+            </a>
+          </div>
+
+          {/* Right — copyright */}
+          <p className="font-mono text-[10px] text-[var(--muted)] md:text-right">
+            &copy; {new Date().getFullYear()}
+          </p>
+        </div>
+      </footer>
+    </div>
   );
 }

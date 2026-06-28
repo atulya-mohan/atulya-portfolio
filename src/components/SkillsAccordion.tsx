@@ -29,31 +29,31 @@ export default function SkillsAccordion({ groups }: SkillsAccordionProps) {
         const isOpen = openGroups.has(groupName);
         
         return (
-          <div key={groupName} className="border border-black">
+          <div key={groupName} className="border border-[var(--border)]">
             <button
               onClick={() => toggleGroup(groupName)}
-              className="w-full flex items-center justify-between p-3 text-left transition-all group"
+              className="btn-press w-full flex items-center justify-between p-3 text-left transition-colors group"
               style={{ backgroundColor: color }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = '#FF4F00';
+                e.currentTarget.style.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#FF4F00';
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.backgroundColor = color;
               }}
             >
-              <span className="font-header text-lg uppercase text-black group-hover:text-white transition-colors">{groupName}</span>
-              <ChevronDown 
-                className={`h-5 w-5 transition-all text-black group-hover:text-white ${isOpen ? 'rotate-180' : ''}`}
+              <span className="font-header text-lg uppercase text-gray-900 group-hover:text-white transition-colors">{groupName}</span>
+              <ChevronDown
+                className={`h-5 w-5 transition-[transform,color] text-gray-900 group-hover:text-white ${isOpen ? 'rotate-180' : ''}`}
               />
             </button>
             
             {isOpen && (
-              <div className="p-3 border-t border-black">
+              <div className="p-3 border-t border-[var(--border)]">
                 <div className="flex flex-wrap gap-2">
                   {skills.map((skill) => (
                     <span
                       key={skill}
-                      className="border border-black/50 px-3 py-1 text-xs font-mono text-black"
+                      className="border border-[var(--border-light)] px-3 py-1 text-xs font-mono text-gray-900"
                       style={{ backgroundColor: color }}
                     >
                       {skill}

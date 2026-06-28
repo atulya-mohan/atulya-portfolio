@@ -1,23 +1,69 @@
 @import "tailwindcss";
 
 :root {
+  --nav-h: 56px;
   --background: #F0F2E6;
   --foreground: #1a1a1a;
+  --border: #000000;
+  --border-light: rgba(0,0,0,0.5);
+  --card-bg: transparent;
+  --muted: #1a1a1a; /* no gray text — matches --foreground (light) */
+  --accent: #FF4F00;
   --font-header: 'Chakra Petch', sans-serif;
   --font-sans: 'Space Grotesk', sans-serif;
   --font-mono: 'IBM Plex Mono', monospace;
+}
+
+html.dark {
+  --background: #111110;
+  --foreground: #F0F2E6;
+  --border: rgba(240,242,230,0.7);
+  --border-light: rgba(240,242,230,0.18);
+  --card-bg: #1c1c19;
+  --muted: #F0F2E6; /* no gray text — matches --foreground (dark) */
+  --accent: #FF6B2C;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Typography polish: balance headings, avoid orphans in body copy */
+h1, h2, h3, h4, .font-header { text-wrap: balance; }
+p { text-wrap: pretty; }
+
+/* ==== Film grain overlay ==== */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 0.04;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  mix-blend-mode: overlay;
+}
+html.dark body::after {
+  opacity: 0.035;
+  mix-blend-mode: soft-light;
 }
 
 .font-header { font-family: var(--font-header); }
 .font-sans { font-family: var(--font-sans); }
-.font-mono { font-family: var(--font-mono); }
-.font-body { font-family: 'IBM Plex Sans', sans-serif; }
+.font-mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+.font-body { font-family: var(--font-sans); }
+
+/* ==== Image outline — subtle crisp edge on borderless media (#11) ====
+   Pure black at low opacity in light, pure white in dark — never tinted. */
+.img-outline { outline: 1px solid rgba(0, 0, 0, 0.1); outline-offset: -1px; }
+html.dark .img-outline { outline-color: rgba(255, 255, 255, 0.1); }
 
 /* ==== Glass scrollbars (use class="scrollbar-glass") ==== */
 /* ... your scrollbar styles remain unchanged ... */
@@ -31,15 +77,225 @@ body {
 }
 .scrollbar-glass::-webkit-scrollbar-thumb:hover{ background:rgba(255,255,255,.42); }
 
-/* ==== New Utility for Diagonal Corners ==== */
-.cut-corners {
-  --corner-cut: 8px; /* Adjust the size of the cut here */
-  clip-path: polygon(
-    0% 0%, /* top left */
-    calc(100% - var(--corner-cut)) 0%, /* top right start cut */
-    100% var(--corner-cut), /* top right end cut */
-    100% 100%, /* bottom right */
-    var(--corner-cut) 100%, /* bottom left start cut */
-    0% calc(100% - var(--corner-cut)) /* bottom left end cut */
-  );
+/* ==== Minimal scrollbars — appear on hover, accent (orange) thumb ==== */
+.vertical-scrollbar::-webkit-scrollbar { width: 8px; }
+.vertical-scrollbar::-webkit-scrollbar-track { background: transparent; }
+.vertical-scrollbar::-webkit-scrollbar-thumb { background: transparent; border-radius: 4px; border: 2px solid transparent; background-clip: padding-box; }
+.vertical-scrollbar:hover::-webkit-scrollbar-thumb { background: var(--accent); }
+.horizontal-scrollbar::-webkit-scrollbar { height: 8px; }
+.horizontal-scrollbar::-webkit-scrollbar-track { background: transparent; }
+.horizontal-scrollbar::-webkit-scrollbar-thumb { background: transparent; border-radius: 4px; border: 2px solid transparent; background-clip: padding-box; }
+.horizontal-scrollbar:hover::-webkit-scrollbar-thumb { background: var(--accent); }
+.vertical-scrollbar, .horizontal-scrollbar { scrollbar-width: thin; scrollbar-color: transparent transparent; }
+.vertical-scrollbar:hover, .horizontal-scrollbar:hover { scrollbar-color: var(--accent) transparent; }
+
+.content-scrollbar::-webkit-scrollbar { width: 8px; height: 8px; }
+.content-scrollbar::-webkit-scrollbar-track { background: transparent; }
+.content-scrollbar::-webkit-scrollbar-thumb { background: transparent; border-radius: 4px; border: 2px solid transparent; background-clip: padding-box; }
+.content-scrollbar:hover::-webkit-scrollbar-thumb { background: var(--accent); }
+.content-scrollbar { scrollbar-width: thin; scrollbar-color: transparent transparent; }
+.content-scrollbar:hover { scrollbar-color: var(--accent) transparent; }
+
+.page-scrollbar::-webkit-scrollbar { height: 8px; }
+.page-scrollbar::-webkit-scrollbar-track { background: transparent; }
+.page-scrollbar::-webkit-scrollbar-thumb { background: transparent; border-radius: 4px; border: 2px solid transparent; background-clip: padding-box; }
+.page-scrollbar:hover::-webkit-scrollbar-thumb { background: var(--accent); }
+.page-scrollbar { scrollbar-width: thin; scrollbar-color: transparent transparent; }
+.page-scrollbar:hover { scrollbar-color: var(--accent) transparent; }
+
+/* ==== Print styles ==== */
+@media print {
+  /* Hide chrome */
+  header, nav, footer, .no-print { display: none !important; }
+
+  /* Reset colours & type */
+  body { background: white !important; color: black !important; font-size: 11pt; }
+  * { color: black !important; border-color: #ccc !important; box-shadow: none !important; text-shadow: none !important; }
+
+  /* Unlock fixed/sticky layouts */
+  .fixed, .sticky { position: static !important; overflow: visible !important; height: auto !important; }
+
+  /* Kill animations & transitions */
+  *, *::before, *::after {
+    animation: none !important;
+    transition: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  /* Show link URLs (skip internal & mailto) */
+  a[href]::after { content: " (" attr(href) ")"; font-size: 0.8em; color: #666 !important; }
+  a[href^="mailto:"]::after, a[href^="/"]::after, a[href^="#"]::after { content: none; }
+
+  /* Prevent orphan headings & image breaks */
+  h1, h2, h3, h4 { page-break-after: avoid; }
+  img, svg, figure { page-break-inside: avoid; }
+  p { orphans: 3; widows: 3; }
+}
+
+/* ==== Focus indicators (#18) ==== */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+button:focus-visible, a:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* ==== Project type accent colors (#2) ==== */
+.project-me { --project-accent: #3B82F6; }
+.project-em { --project-accent: #10B981; }
+.project-sd { --project-accent: #FF4F00; }
+html.dark .project-me { --project-accent: #60A5FA; }
+html.dark .project-em { --project-accent: #34D399; }
+html.dark .project-sd { --project-accent: #FF6B2C; }
+
+.project-type-card {
+  border: 1px solid var(--border);
+  border-top: 3px solid var(--project-accent, var(--accent));
+}
+
+/* ==== Career datasheet (homepage timeline) — track colors ==== */
+.career-sheet {
+  --hw: #3B82F6;   /* hardware / mechanical track (ME blue) */
+  --pd: #10B981;   /* product / management track (EM green) */
+  --grid: rgba(0, 0, 0, 0.55);
+}
+html.dark .career-sheet {
+  --hw: #60A5FA;
+  --pd: #34D399;
+  --grid: rgba(240, 242, 230, 0.45);
+}
+
+/* ==== Card depth system (#9) ====
+   Three tiers:
+     .card            — flat container (border + bg, no shadow)
+     .card-elevated   — raised panel   (subtle shadow, used for content sections)
+     .card-featured   — hero/primary   (accent top-border, stronger shadow)
+     .card-interactive — clickable card (hover lift + shadow)
+*/
+.card {
+  border: 1px solid var(--border);
+  background: var(--card-bg);
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.card-elevated {
+  border: 1px solid var(--border);
+  background: var(--card-bg);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.06);
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+html.dark .card-elevated {
+  border-color: var(--border-light);
+  box-shadow: 0 1px 6px rgba(0,0,0,0.3), 0 0 1px rgba(240,242,230,0.05);
+}
+
+.card-featured {
+  border: 1px solid var(--border);
+  background: var(--card-bg);
+  border-top: 3px solid var(--project-accent, var(--accent));
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04);
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+html.dark .card-featured {
+  border-color: var(--border-light);
+  box-shadow: 0 2px 12px rgba(0,0,0,0.4), 0 0 1px rgba(240,242,230,0.06);
+}
+
+.card-interactive {
+  border: 1px solid var(--border);
+  background: var(--card-bg);
+  transition: box-shadow 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+.card-interactive:hover {
+  border-color: var(--project-accent, var(--accent));
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04);
+  transform: translateY(-2px);
+}
+html.dark .card-interactive:hover {
+  box-shadow: 0 4px 20px rgba(0,0,0,0.4), 0 0 1px rgba(240,242,230,0.08);
+}
+
+/* ==== Project thumbnail hover ==== */
+.project-thumb {
+  transition: transform 150ms ease, box-shadow 150ms ease;
+}
+.project-thumb:hover {
+  transform: scale(1.03);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+/* ==== Timeline clickable hint (#16) ==== */
+.timeline-icon {
+  position: relative;
+}
+.timeline-icon::after {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  transition: border-color 0.2s ease, transform 0.2s ease;
+}
+.timeline-icon:hover::after {
+  border-color: var(--accent);
+  transform: scale(1.1);
+}
+
+/* ==== Micro-interactions (#21) ==== */
+
+/* Animated underline — slides in from left on hover */
+.link-underline {
+  position: relative;
+  text-decoration: none;
+}
+.link-underline::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  width: 100%;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.25s ease;
+}
+.link-underline:hover::after {
+  transform: scaleX(1);
+}
+
+/* Arrow nudge — arrow slides right on hover */
+.arrow-nudge {
+  display: inline-flex;
+  align-items: center;
+}
+.arrow-nudge::after {
+  content: ' →';
+  display: inline-block;
+  transition: transform 0.2s ease;
+}
+.arrow-nudge:hover::after {
+  transform: translateX(4px);
+}
+
+/* Button press — subtle scale-down on active */
+.btn-press {
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+.btn-press:active {
+  transform: scale(0.96);
+}
+
+/* Icon pop — subtle scale on hover for icon buttons */
+.icon-pop {
+  transition: transform 0.15s ease;
+}
+.icon-pop:hover {
+  transform: scale(1.1);
+}
+.icon-pop:active {
+  transform: scale(0.96);
 }

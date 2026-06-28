@@ -1,0 +1,163 @@
+[
+  {
+    "id": "dcb50606-e4f9-4b2d-ad9b-aeb1637960fd",
+    "group_id": "3b96a515-78a4-4517-aa7f-e62d17c3c658",
+    "label": "DFM/DFA",
+    "sort_index": 1,
+    "created_at": "2025-10-18T15:51:50.072156+00:00"
+  },
+  {
+    "id": "3e1f5110-c974-42e6-b902-48bf595ea41c",
+    "group_id": "8953b21b-13fb-4a33-84fc-e6ca59440e94",
+    "label": "MATLAB",
+    "sort_index": 1,
+    "created_at": "2025-10-18T15:51:50.072156+00:00"
+  },
+  {
+    "id": "02daee02-ae66-4d77-bd9a-b7648ee42982",
+    "group_id": "92c89c0f-bdf5-45ff-9b8e-8c2a98000980",
+    "label": "macOS",
+    "sort_index": 1,
+    "created_at": "2025-10-18T15:51:50.072156+00:00"
+  },
+  {
+    "id": "e81eff32-599d-4419-ac05-cab8716e50b9",
+    "group_id": "83225134-8d2e-4a9c-ba66-8048ef747c0c",
+    "label": "Python",
+    "sort_index": 1,
+    "created_at": "2025-10-18T15:51:50.072156+00:00"
+  },
+  {
+    "id": "f34f973f-a21a-4e27-bc25-cfdafbe9de8b",
+    "group_id": "bebf8465-9417-4a78-a97d-63328339d159",
+    "label": "SOLIDWORKS",
+    "sort_index": 1,
+    "created_at": "2025-10-18T15:51:50.072156+00:00"
+  },
+  {
+    "id": "271b0cac-aea3-4086-9bbc-820f781379a9",
+    "group_id": "92c89c0f-bdf5-45ff-9b8e-8c2a98000980",
+    "label": "Windows",
+    "sort_index": 2,
+    "created_at": "2025-10-18T15:51:50.072156+00:00"
+  },
+  {
+    "id": "38b4a8de-f5b5-4c9c-b5ec-da986a2f7c4c",
+    "group_id": "bebf8465-9417-4a78-a97d-63328339d159",
+    "label": "Siemens NX",
+    "sort_index": 2,
+    "created_at": "2025-10-18T15:51:50.072156+00:00"
+  },
+  {
+    "id": "52383b88-71ff-4cf0-aad7-f2894551a222",
+    "group_id": "83225134-8d2e-4a9c-ba66-8048ef747c0c",
+    "label": "R",
+    "sort_index": 2,
+    "created_at": "2025-10-18T15:51:50.072156+00:00"
+  },
+  {
+    "id": "220d026f-5812-40a6-8009-5618f8867f20",
+    "group_id": "8953b21b-13fb-4a33-84fc-e6ca59440e94",
+    "label": "Python",
+    "sort_index": 2,
+    "created_at": "2025-10-18T15:51:50.072156+00:00"
+  },
+  {
+    "id": "9070414f-8037-4e03-8012-53df5a4f3a06",
+    "group_id": "3b96a515-78a4-4517-aa7f-e62d17c3c658",
+    "label": "3D Printing",
+    "sort_index": 2,
+    "created_at": "2025-10-18T15:51:50.072156+00:00"
+  },
+  {
+    "id": "d9e16196-4063-4e1a-9c16-4bb91378da33",
+    "group_id": "3b96a515-78a4-4517-aa7f-e62d17c3c658",
+    "label": "CNC",
+    "sort_index": 3,
+    "created_at": "2025-10-18T15:51:50.072156+00:00"
+  },
+  {
+    "id": "fd2aeff2-62eb-4d45-818a-33be035ceb5d",
+    "group_id": "92c89c0f-bdf5-45ff-9b8e-8c2a98000980",
+    "label": "Linux",
+    "sort_index": 3,
+    "created_at": "2025-10-18T15:51:50.072156+00:00"
+  },
+  {
+    "id": "52ecb1f2-6754-45a2-8f5e-90845aa70007",
+    "group_id": "bebf8465-9417-4a78-a97d-63328339d159",
+    "label": "Fusion 360",
+    "sort_index": 3,
+    "created_at": "2025-10-18T15:51:50.072156+00:00"
+  },
+  {
+    "id": "fd5cf41d-b132-4ac7-ad7e-05e39a3a38c9",
+    "group_id": "8953b21b-13fb-4a33-84fc-e6ca59440e94",
+    "label": "R",
+    "sort_index": 3,
+    "created_at": "2025-10-18T15:51:50.072156+00:00"
+  },
+  {
+    "id": "0f59e004-30ba-4d4c-82a9-081406b757f1",
+    "group_id": "83225134-8d2e-4a9c-ba66-8048ef747c0c",
+    "label": "MATLAB",
+    "sort_index": 4,
+    "created_at": "2025-10-18T15:51:50.072156+00:00"
+  },
+  {
+    "id": "ff02e7c7-4e64-494a-b447-57fb84689eb9",
+    "group_id": "bebf8465-9417-4a78-a97d-63328339d159",
+    "label": "OnShape",
+    "sort_index": 4,
+    "created_at": "2025-10-18T15:51:50.072156+00:00"
+  },
+  {
+    "id": "73358657-f971-4c05-9e8d-f918477dface",
+    "group_id": "92c89c0f-bdf5-45ff-9b8e-8c2a98000980",
+    "label": "Git/GitHub",
+    "sort_index": 4,
+    "created_at": "2025-10-18T15:51:50.072156+00:00"
+  },
+  {
+    "id": "4beaf984-34e9-43e0-b3ea-65eb55c98d06",
+    "group_id": "3b96a515-78a4-4517-aa7f-e62d17c3c658",
+    "label": "Rapid Prototyping",
+    "sort_index": 4,
+    "created_at": "2025-10-18T15:51:50.072156+00:00"
+  },
+  {
+    "id": "0bdfe410-741b-47d3-aa91-9da3114638d3",
+    "group_id": "bebf8465-9417-4a78-a97d-63328339d159",
+    "label": "Abaqus",
+    "sort_index": 5,
+    "created_at": "2025-10-18T15:51:50.072156+00:00"
+  },
+  {
+    "id": "4c570fa5-9051-42d5-b0d9-f0c1d2a27139",
+    "group_id": "8953b21b-13fb-4a33-84fc-e6ca59440e94",
+    "label": "Figma",
+    "sort_index": 5,
+    "created_at": "2025-10-18T15:51:50.072156+00:00"
+  },
+  {
+    "id": "3c402f32-d270-4638-9764-6e275395417b",
+    "group_id": "8953b21b-13fb-4a33-84fc-e6ca59440e94",
+    "label": "Power BI",
+    "sort_index": 6,
+    "created_at": "2025-10-18T15:51:50.072156+00:00"
+  },
+  {
+    "id": "bec2b163-332a-460f-9bfe-8ac63b0fd1f0",
+    "group_id": "bebf8465-9417-4a78-a97d-63328339d159",
+    "label": "COMSOL",
+    "sort_index": 6,
+    "created_at": "2025-10-18T15:51:50.072156+00:00"
+  },
+  {
+    "id": "1e191d3d-1f6e-4fe8-bc64-a84c91837072",
+    "group_id": "8953b21b-13fb-4a33-84fc-e6ca59440e94",
+    "label": "Excel",
+    "sort_index": 7,
+    "created_at": "2025-10-18T15:51:50.072156+00:00"
+  }
+]

@@ -10,7 +10,9 @@ import {
   Cpu,
 } from 'lucide-react';
 import Image from "next/image";
-import type { TimelineSeg } from '@/lib/about/types';
+import { motion } from 'motion/react';
+import TimelineTooltip from '@/components/TimelineTooltip';
+import type { TimelineSeg } from '@/lib/types';
 
 type Seg = {
   id?: string;
@@ -18,6 +20,7 @@ type Seg = {
   end?: string | null;
   label?: string | null;
   logo_url?: string | null;
+  logo_bg?: string | null;
   type?: 'education' | 'experience' | string | null;
   details?: any;
 };
@@ -86,7 +89,7 @@ export default function TriBandTimeline({
   return (
     <div className={['grid h-full gap-2', rowsClass, className].join(' ')}>
       {title ? (
-        <h3 className="font-header text-2xl uppercase text-black">{title}</h3>
+        <h3 className="font-header text-2xl uppercase text-[var(--foreground)]">{title}</h3>
       ) : (
         <div className="h-0" aria-hidden />
       )}
@@ -94,15 +97,18 @@ export default function TriBandTimeline({
       {/* TRACK AREA */}
       <div className="relative min-h-0">
         {/* axis */}
-        <div
+        <motion.div
           className="absolute top-1/2 -translate-y-1/2"
           style={{ left: pad, right: pad }}
+          initial={{ scaleX: 0, originX: 0 }}
+          animate={{ scaleX: 1 }}
+          transition={{ duration: 0.8, ease: 'easeOut' }}
         >
           <div
-            className="rounded-full bg-black/80"
+            className="rounded-full bg-[var(--foreground)]/80"
             style={{ height: lineThick }}
           />
-        </div>
+        </motion.div>
 
         {/* ticks */}
         {ticks.map((y) => (
@@ -111,7 +117,7 @@ export default function TriBandTimeline({
             className="absolute top-1/2 -translate-y-1/2"
             style={{ left: `calc(${leftAt((y - min) / span)} - 1px)` }}
           >
-            <div className="h-3 w-[2px] rounded bg-black/50" />
+            <div className="h-3 w-[2px] rounded bg-[var(--foreground)]/50" />
           </div>
         ))}
 
@@ -121,7 +127,7 @@ export default function TriBandTimeline({
           const hasEnd = seg.end && seg.end.trim() !== '';
           const endDateString = hasEnd ? seg.end : `${endYear}-12`;
           const b = ratio(endDateString as string);
-          const { logo_url, label } = seg;
+          const { logo_url, label, logo_bg } = seg;
           const mid = (a + b) / 2;
           const Icon = ICONS[i % ICONS.length];
 
@@ -129,7 +135,7 @@ export default function TriBandTimeline({
             <div key={`top-${i}`} className="absolute inset-0">
               {/* Bar */}
               <div
-                className="absolute rounded-full bg-black/80"
+                className="absolute rounded-full bg-[var(--foreground)]/80"
                 style={{
                   left: leftAt(a),
                   width: widthBetween(a, b),
@@ -139,7 +145,7 @@ export default function TriBandTimeline({
               />
               {/* Start Riser */}
               <div
-                className="absolute bg-black/60"
+                className="absolute bg-[var(--foreground)]/60"
                 style={{
                   left: `calc(${leftAt(a)} - 1px)`,
                   top: `calc(50% - ${rise}px)`,
@@ -150,7 +156,7 @@ export default function TriBandTimeline({
               {/* Conditionally render End Riser */}
               {hasEnd && (
                 <div
-                  className="absolute bg-black/60"
+                  className="absolute bg-[var(--foreground)]/60"
                   style={{
                     left: `calc(${leftAt(b)} - 1px)`,
                     top: `calc(50% - ${rise}px)`,
@@ -160,35 +166,44 @@ export default function TriBandTimeline({
                 />
               )}
 
-              {/* Icon/Logo Container - NOW CLICKABLE */}
-              <button
-                onClick={() => onSegmentClick?.(seg)}
-                className="absolute -translate-x-1/2 -translate-y-1/2 rounded-full border border-black bg-[#F0F2E6] p-1 flex items-center justify-center overflow-hidden transition-all hover:scale-110 hover:border-[#FF4F00] hover:shadow-lg cursor-pointer"
+              {/* Icon/Logo Container with hover tooltip */}
+              <div
+                className="absolute -translate-x-1/2 -translate-y-1/2"
                 style={{
                   left: leftAt(mid),
                   top: `calc(50% - ${rise}px)`,
                   width: iconBoxSize,
                   height: iconBoxSize,
                 }}
-                title={label || 'Click for details'}
               >
-                {logo_url ? (
-                  <Image
-                    src={logo_url}
-                    alt={label || 'Timeline event logo'}
-                    className="object-contain"
-                    width={iconSize}
-                    height={iconSize}
-                    style={{ backgroundColor: 'white' }}
-                  />
-                ) : (
-                  <Icon
-                    className="text-black"
-                    width={iconSize}
-                    height={iconSize}
-                  />
-                )}
-              </button>
+                <TimelineTooltip segment={seg} position="top">
+                  <motion.button
+                    onClick={() => onSegmentClick?.(seg)}
+                    className="border border-[var(--border)] bg-white p-[3px] flex items-center justify-center transition-[transform,border-color] hover:scale-110 hover:border-[var(--accent)] cursor-pointer"
+                    style={{ width: iconBoxSize, height: iconBoxSize, ...(logo_bg ? { backgroundColor: logo_bg } : {}) }}
+                    initial={{ scale: 0, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{ delay: 0.4 + i * 0.15, duration: 0.3, type: 'spring', stiffness: 300, damping: 20 }}
+                  >
+                    {logo_url ? (
+                      <Image
+                        src={logo_url}
+                        alt={label || 'Timeline event logo'}
+                        className="object-contain"
+                        width={iconSize}
+                        height={iconSize}
+                        style={{ backgroundColor: logo_bg ?? 'white' }}
+                      />
+                    ) : (
+                      <Icon
+                        className="text-[var(--foreground)]"
+                        width={iconSize}
+                        height={iconSize}
+                      />
+                    )}
+                  </motion.button>
+                </TimelineTooltip>
+              </div>
             </div>
           );
         })}
@@ -199,7 +214,7 @@ export default function TriBandTimeline({
           const hasEnd = seg.end && seg.end.trim() !== '';
           const endDateString = hasEnd ? seg.end : `${endYear}-12`;
           const b = ratio(endDateString as string);
-          const { logo_url, label } = seg;
+          const { logo_url, label, logo_bg } = seg;
           const mid = (a + b) / 2;
           const Icon = ICONS[(i + 3) % ICONS.length];
 
@@ -207,7 +222,7 @@ export default function TriBandTimeline({
             <div key={`bot-${i}`} className="absolute inset-0">
               {/* Bar */}
               <div
-                className="absolute rounded-full bg-black/80"
+                className="absolute rounded-full bg-[var(--foreground)]/80"
                 style={{
                   left: leftAt(a),
                   width: widthBetween(a, b),
@@ -217,7 +232,7 @@ export default function TriBandTimeline({
               />
               {/* Start Riser */}
               <div
-                className="absolute bg-black/60"
+                className="absolute bg-[var(--foreground)]/60"
                 style={{
                   left: `calc(${leftAt(a)} - 1px)`,
                   top: '50%',
@@ -228,7 +243,7 @@ export default function TriBandTimeline({
               {/* Conditionally render End Riser */}
               {hasEnd && (
                 <div
-                  className="absolute bg-black/60"
+                  className="absolute bg-[var(--foreground)]/60"
                   style={{
                     left: `calc(${leftAt(b)} - 1px)`,
                     top: '50%',
@@ -238,35 +253,44 @@ export default function TriBandTimeline({
                 />
               )}
 
-              {/* Icon/Logo Container - NOW CLICKABLE */}
-              <button
-                onClick={() => onSegmentClick?.(seg)}
-                className="absolute -translate-x-1/2 -translate-y-1/2 rounded-full border border-black bg-[#F0F2E6] p-1 flex items-center justify-center overflow-hidden transition-all hover:scale-110 hover:border-[#FF4F00] hover:shadow-lg cursor-pointer"
+              {/* Icon/Logo Container with hover tooltip */}
+              <div
+                className="absolute -translate-x-1/2 -translate-y-1/2"
                 style={{
                   left: leftAt(mid),
                   top: `calc(50% + ${rise}px)`,
                   width: iconBoxSize,
                   height: iconBoxSize,
                 }}
-                title={label || 'Click for details'}
               >
-                {logo_url ? (
-                  <Image
-                    src={logo_url}
-                    alt={label || 'Timeline event logo'}
-                    className="object-contain"
-                    width={iconSize}
-                    height={iconSize}
-                    style={{ backgroundColor: 'white' }}
-                  />
-                ) : (
-                  <Icon
-                    className="text-black"
-                    width={iconSize}
-                    height={iconSize}
-                  />
-                )}
-              </button>
+                <TimelineTooltip segment={seg} position="bottom">
+                  <motion.button
+                    onClick={() => onSegmentClick?.(seg)}
+                    className="border border-[var(--border)] bg-white p-[3px] flex items-center justify-center transition-[transform,border-color] hover:scale-110 hover:border-[var(--accent)] cursor-pointer"
+                    style={{ width: iconBoxSize, height: iconBoxSize, ...(logo_bg ? { backgroundColor: logo_bg } : {}) }}
+                    initial={{ scale: 0, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{ delay: 0.5 + i * 0.15, duration: 0.3, type: 'spring', stiffness: 300, damping: 20 }}
+                  >
+                    {logo_url ? (
+                      <Image
+                        src={logo_url}
+                        alt={label || 'Timeline event logo'}
+                        className="object-contain"
+                        width={iconSize}
+                        height={iconSize}
+                        style={{ backgroundColor: logo_bg ?? 'white' }}
+                      />
+                    ) : (
+                      <Icon
+                        className="text-[var(--foreground)]"
+                        width={iconSize}
+                        height={iconSize}
+                      />
+                    )}
+                  </motion.button>
+                </TimelineTooltip>
+              </div>
             </div>
           );
         })}
@@ -284,7 +308,7 @@ export default function TriBandTimeline({
                   top: '50%',
                 }}
               >
-                <span className="rounded-md bg-black px-1.5 py-0.5 text-[10px] leading-none text-white">
+                <span className="rounded-md bg-[var(--foreground)] px-1.5 py-0.5 text-[10px] leading-none text-[var(--background)]">
                   {y}
                 </span>
               </div>
@@ -293,7 +317,7 @@ export default function TriBandTimeline({
 
       {/* YEAR LABELS as a row (if requested) */}
       {yearStyle === 'row' && (
-        <div className="flex items-center justify-between text-xs text-zinc-700">
+        <div className="flex items-center justify-between text-xs text-[var(--muted)]">
           {ticks
             .filter((y) => (y - startYear) % yearStep === 0 || y === endYear)
             .map((y) => (

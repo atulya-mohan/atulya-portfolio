@@ -4,27 +4,43 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { motion } from 'motion/react';
 import { Linkedin, Mail, Music, Camera, Gamepad2, Plane, Wrench, X } from 'lucide-react';
 import TriBandTimeline from '@/components/TriBandTimeline';
-import SkillsAccordion from '@/components/SkillsAccorrdion';
-import type { TimelineSeg, TimelineEducation, TimelineExperience } from '@/lib/about/types';
+import SkillsAccordion from '@/components/SkillsAccordion';
+import type { TimelineSeg, TimelineEducation, TimelineExperience, Interest, ContactLink, SkillGroup } from '@/lib/types';
+
+interface AboutData {
+  profile: {
+    name: string | null;
+    bio: string | null;
+    photoUrl: string | null;
+  };
+  timeline: {
+    top: TimelineSeg[];
+    bottom: TimelineSeg[];
+  };
+  skills: SkillGroup[];
+  interests: Interest[];
+  contacts: ContactLink[];
+}
 
 interface AboutPageClientProps {
-  aboutData: any;
+  aboutData: AboutData;
   skillsGroups: Record<string, { skills: string[]; color: string }>;
-  fallbackInterests: any[];
+  fallbackInterests: Interest[];
 }
 
 export default function AboutPageClient({ aboutData, skillsGroups, fallbackInterests }: AboutPageClientProps) {
   const [selectedSegment, setSelectedSegment] = useState<TimelineSeg | null>(null);
-  
+
   // Safely destructure with defaults to prevent errors
   const profile = aboutData?.profile ?? { name: null, bio: null, photoUrl: null };
   const timeline = aboutData?.timeline ?? { top: [], bottom: [] };
   const interests = aboutData?.interests ?? [];
   const contacts = aboutData?.contacts ?? [];
 
-  const profilePhoto = profile?.photoUrl ?? '/portrait.jpg';
+  const profilePhoto = profile?.photoUrl ?? '/images/profile/profile.jpg';
   const fullBio = profile?.bio ?? 'Bio not available';
 
   const contactIcon = (name?: string | null) => {
@@ -47,189 +63,101 @@ export default function AboutPageClient({ aboutData, skillsGroups, fallbackInter
     }
   };
 
-  const handleSegmentClick = (segment: TimelineSeg | { id?: string; start: string; end?: string | null; label?: string | null; logo_url?: string | null; type?: 'education' | 'experience' | string | null; details?: any }) => {
-    // Cast to TimelineSeg since we know the data structure matches
+  const handleSegmentClick = (segment: TimelineSeg | { id?: string; start: string; end?: string | null; label?: string | null; logo_url?: string | null; type?: string | null; details?: TimelineEducation | TimelineExperience | null }) => {
     setSelectedSegment(segment as TimelineSeg);
   };
 
-  const renderDetailPanel = () => {
-    if (!selectedSegment || !selectedSegment.details) return null;
+  // Compact detail popup that lives INSIDE the timeline box (absolute inset-0).
+  const renderTimelinePopup = () => {
+    if (!selectedSegment) return null;
 
+    const details = selectedSegment.details;
     const isEducation = selectedSegment.type === 'education';
-    const details = selectedSegment.details as TimelineEducation | TimelineExperience;
+    const edu = isEducation ? (details as TimelineEducation | null) : null;
+    const exp = !isEducation ? (details as TimelineExperience | null) : null;
+
+    const subtitle = isEducation ? edu?.degree : exp?.position;
+    const bullets = (isEducation ? edu?.achievements : exp?.responsibilities) ?? [];
+    const technologies = exp?.technologies ?? [];
+    const location = details?.location;
+    const description = details?.description;
+    const endLabel = selectedSegment.end ? selectedSegment.end : 'Present';
 
     return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
-        <div className="relative max-w-3xl w-full max-h-[85vh] overflow-auto bg-[#F0F2E6] border-2 border-black">
-          {/* Header with title and close button */}
-          <div className="sticky top-0 bg-[#F0F2E6] border-b-2 border-black p-6 flex items-start justify-between">
-            <div className="flex-1 pr-4">
-              <h2 className="font-header text-4xl uppercase mb-2 leading-tight">{selectedSegment.label}</h2>
-              <p className="font-mono text-sm text-zinc-700">
-                {selectedSegment.start} - {selectedSegment.end || 'Present'}
-              </p>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.18, ease: 'easeOut' }}
+        className="absolute inset-0 z-20 flex flex-col bg-[var(--background)] border-2 border-[var(--border)]"
+      >
+        {/* Header */}
+        <div className="flex items-start justify-between gap-2 border-b border-[var(--border)] px-3 py-2 shrink-0">
+          <div className="flex items-center gap-2.5 min-w-0">
+            {selectedSegment.logo_url && (
+              <span
+                className="flex h-9 w-9 shrink-0 items-center justify-center border border-[var(--border)] p-[3px]"
+                style={{ background: selectedSegment.logo_bg ?? '#ffffff' }}
+              >
+                <Image src={selectedSegment.logo_url} alt="" width={24} height={24} className="h-full w-full object-contain" />
+              </span>
+            )}
+            <div className="min-w-0">
+              <h3 className="font-header text-base lg:text-lg uppercase leading-none truncate">{selectedSegment.label}</h3>
+              {subtitle && <p className="font-mono text-[10px] text-[var(--muted)] mt-1 leading-tight line-clamp-2">{subtitle}</p>}
             </div>
+          </div>
+          <div className="flex items-center gap-2 shrink-0">
+            <span className="hidden md:block font-mono text-[10px] text-[var(--muted)] whitespace-nowrap">{selectedSegment.start} – {endLabel}</span>
             <button
               onClick={() => setSelectedSegment(null)}
-              className="shrink-0 p-2 border-2 border-black hover:bg-[#FF4F00] hover:border-[#FF4F00] hover:text-white transition-colors"
-              aria-label="Close"
+              className="icon-pop flex h-10 w-10 items-center justify-center border border-[var(--border)] hover:bg-[var(--accent)] hover:border-[var(--accent)] hover:text-white transition-colors"
+              aria-label="Close detail"
             >
-              <X className="h-6 w-6" />
+              <X className="h-4 w-4" />
             </button>
           </div>
-
-          {/* Content */}
-          <div className="p-6">
-            {isEducation ? (
-              <div className="space-y-6">
-                {/* Institution */}
-                <div className="border-l-4 border-black pl-4">
-                  <h3 className="font-header text-sm uppercase text-zinc-500 mb-1">Institution</h3>
-                  <p className="font-mono text-base text-black">{(details as TimelineEducation).institution}</p>
-                </div>
-
-                {/* Degree and Field in a grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {(details as TimelineEducation).degree && (
-                    <div className="border-l-4 border-black pl-4">
-                      <h3 className="font-header text-sm uppercase text-zinc-500 mb-1">Degree</h3>
-                      <p className="font-mono text-base text-black">{(details as TimelineEducation).degree}</p>
-                    </div>
-                  )}
-                  {(details as TimelineEducation).field_of_study && (
-                    <div className="border-l-4 border-black pl-4">
-                      <h3 className="font-header text-sm uppercase text-zinc-500 mb-1">Field of Study</h3>
-                      <p className="font-mono text-base text-black">{(details as TimelineEducation).field_of_study}</p>
-                    </div>
-                  )}
-                </div>
-
-                {/* GPA and Location in a grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {(details as TimelineEducation).gpa && (
-                    <div className="border-l-4 border-black pl-4">
-                      <h3 className="font-header text-sm uppercase text-zinc-500 mb-1">GPA</h3>
-                      <p className="font-mono text-base text-black">{(details as TimelineEducation).gpa}</p>
-                    </div>
-                  )}
-                  {(details as TimelineEducation).location && (
-                    <div className="border-l-4 border-black pl-4">
-                      <h3 className="font-header text-sm uppercase text-zinc-500 mb-1">Location</h3>
-                      <p className="font-mono text-base text-black">{(details as TimelineEducation).location}</p>
-                    </div>
-                  )}
-                </div>
-
-                {/* Description */}
-                {(details as TimelineEducation).description && (
-                  <div className="border-l-4 border-black pl-4">
-                    <h3 className="font-header text-sm uppercase text-zinc-500 mb-2">Description</h3>
-                    <p className="font-mono text-sm leading-relaxed text-zinc-800">{(details as TimelineEducation).description}</p>
-                  </div>
-                )}
-
-                {/* Achievements */}
-                {(details as TimelineEducation).achievements && (details as TimelineEducation).achievements!.length > 0 && (
-                  <div className="border-l-4 border-black pl-4">
-                    <h3 className="font-header text-sm uppercase text-zinc-500 mb-3">Achievements</h3>
-                    <ul className="space-y-2">
-                      {(details as TimelineEducation).achievements!.map((achievement, idx) => (
-                        <li key={idx} className="flex items-start gap-3">
-                          <span className="mt-1.5 h-1.5 w-1.5 shrink-0 bg-black" />
-                          <span className="font-mono text-sm text-zinc-800">{achievement}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-              </div>
-            ) : (
-              <div className="space-y-6">
-                {/* Company and Position */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="border-l-4 border-black pl-4">
-                    <h3 className="font-header text-sm uppercase text-zinc-500 mb-1">Company</h3>
-                    <p className="font-mono text-base text-black">{(details as TimelineExperience).company}</p>
-                  </div>
-                  <div className="border-l-4 border-black pl-4">
-                    <h3 className="font-header text-sm uppercase text-zinc-500 mb-1">Position</h3>
-                    <p className="font-mono text-base text-black">{(details as TimelineExperience).position}</p>
-                  </div>
-                </div>
-
-                {/* Location */}
-                {(details as TimelineExperience).location && (
-                  <div className="border-l-4 border-black pl-4">
-                    <h3 className="font-header text-sm uppercase text-zinc-500 mb-1">Location</h3>
-                    <p className="font-mono text-base text-black">{(details as TimelineExperience).location}</p>
-                  </div>
-                )}
-
-                {/* Description */}
-                {(details as TimelineExperience).description && (
-                  <div className="border-l-4 border-black pl-4">
-                    <h3 className="font-header text-sm uppercase text-zinc-500 mb-2">Description</h3>
-                    <p className="font-mono text-sm leading-relaxed text-zinc-800">{(details as TimelineExperience).description}</p>
-                  </div>
-                )}
-
-                {/* Responsibilities */}
-                {(details as TimelineExperience).responsibilities && (details as TimelineExperience).responsibilities!.length > 0 && (
-                  <div className="border-l-4 border-black pl-4">
-                    <h3 className="font-header text-sm uppercase text-zinc-500 mb-3">Responsibilities</h3>
-                    <ul className="space-y-2">
-                      {(details as TimelineExperience).responsibilities!.map((resp, idx) => (
-                        <li key={idx} className="flex items-start gap-3">
-                          <span className="mt-1.5 h-1.5 w-1.5 shrink-0 bg-black" />
-                          <span className="font-mono text-sm text-zinc-800">{resp}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-
-                {/* Technologies */}
-                {(details as TimelineExperience).technologies && (details as TimelineExperience).technologies!.length > 0 && (
-                  <div className="border-l-4 border-black pl-4">
-                    <h3 className="font-header text-sm uppercase text-zinc-500 mb-3">Technologies</h3>
-                    <div className="flex flex-wrap gap-2">
-                      {(details as TimelineExperience).technologies!.map((tech, idx) => (
-                        <span key={idx} className="border border-black/50 px-3 py-1.5 text-xs font-mono bg-white text-black">
-                          {tech}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
         </div>
-      </div>
+
+        {/* Body */}
+        <div className="flex-1 min-h-0 overflow-auto px-3 py-2.5 vertical-scrollbar">
+          {location && (
+            <p className="font-mono text-[10px] uppercase tracking-wide text-[var(--muted)] mb-2">
+              {location} · {selectedSegment.start}–{endLabel}
+            </p>
+          )}
+          {description && (
+            <p className="font-mono text-[11px] leading-relaxed text-[var(--foreground)]">{description}</p>
+          )}
+          {bullets.length > 0 && (
+            <ul className="mt-2.5 space-y-1.5">
+              {bullets.map((b, idx) => (
+                <li key={idx} className="flex items-start gap-2">
+                  <span className="mt-[6px] h-1 w-1 shrink-0 bg-[var(--accent)]" />
+                  <span className="font-mono text-[11px] leading-snug text-[var(--foreground)]">{b}</span>
+                </li>
+              ))}
+            </ul>
+          )}
+          {technologies.length > 0 && (
+            <div className="mt-3 flex flex-wrap gap-1.5">
+              {technologies.map((t, idx) => (
+                <span key={idx} className="border border-[var(--border)] px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-wide text-[var(--foreground)]">
+                  {t}
+                </span>
+              ))}
+            </div>
+          )}
+        </div>
+      </motion.div>
     );
   };
 
   return (
-    <div className="fixed inset-0 h-full w-full overflow-hidden bg-[#F0F2E6] text-black">
-      {/* ADD: Custom scrollbar styles (same as EM page) */}
-      <style jsx global>{`
-        .vertical-scrollbar::-webkit-scrollbar { width: 8px; }
-        .vertical-scrollbar::-webkit-scrollbar-track { background: transparent; }
-        .vertical-scrollbar::-webkit-scrollbar-thumb { background: transparent; border-radius: 4px; border: 2px solid transparent; background-clip: padding-box; }
-        .vertical-scrollbar:hover::-webkit-scrollbar-thumb { background: black; }
-        .horizontal-scrollbar::-webkit-scrollbar { height: 8px; }
-        .horizontal-scrollbar::-webkit-scrollbar-track { background: transparent; }
-        .horizontal-scrollbar::-webkit-scrollbar-thumb { background: transparent; border-radius: 4px; border: 2px solid transparent; background-clip: padding-box; }
-        .horizontal-scrollbar:hover::-webkit-scrollbar-thumb { background: black; }
-        .vertical-scrollbar, .horizontal-scrollbar { scrollbar-width: thin; scrollbar-color: transparent transparent; }
-        .vertical-scrollbar:hover, .horizontal-scrollbar:hover { scrollbar-color: black transparent; }
-      `}</style>
-
-      {renderDetailPanel()}
+    <div className="min-h-screen md:fixed md:inset-0 md:h-full md:w-full md:overflow-hidden bg-[var(--background)] text-[var(--foreground)]">
+      {/* ===== DESKTOP LAYOUT ===== */}
       <section
-        className="px-4"
+        className="hidden md:block px-4"
         style={{
-          '--nav-h': '56px',
           '--gap': '12px',
           '--cols': 6,
           '--rows': 6,
@@ -239,38 +167,37 @@ export default function AboutPageClient({ aboutData, skillsGroups, fallbackInter
       >
         <div className="pt-[calc(var(--nav-h)+var(--gap))] pb-[var(--gap)]">
           <div
-            className="hidden md:grid h-[calc(100dvh-var(--nav-h)-2*var(--gap))] grid-cols-6 [grid-auto-rows:var(--tile)]"
+            className="grid h-[calc(100dvh-var(--nav-h)-2*var(--gap))] grid-cols-6 [grid-auto-rows:var(--tile)]"
             style={{ gap: 'var(--gap)' }}
           >
             {/* Profile Photo */}
-            <div className="col-span-1 row-span-1 border border-black p-1">
-              <div className="relative h-full w-full overflow-hidden bg-zinc-200">
+            <div className="col-span-1 row-span-1 card p-1">
+              <div className="img-outline relative h-full w-full overflow-hidden bg-zinc-200">
                 <Image
                   src={profilePhoto}
                   alt={profile?.name ?? 'Profile photo'}
                   fill
                   className="object-cover"
-                  sizes="(min-width: 768px) 16vw, 50vw"
+                  sizes="16vw"
                 />
               </div>
             </div>
 
             {/* Contact + Interests */}
             <div className="col-span-1 row-span-1 grid" style={{ gap: 'var(--gap)', gridTemplateRows: '1fr 1fr' }}>
-              {/* Contact */}
-              <div className="border border-black p-3">
-                <h3 className="mb-2 font-header text-2xl uppercase">Contact Me</h3>
+              <div className="card p-3">
+                <h3 className="mb-2 font-header text-lg lg:text-2xl uppercase">Contact Me</h3>
                 <div className="flex items-center gap-2">
                   {((contacts && contacts.length > 0) ? contacts : [
                     { label: 'LinkedIn', url: 'https://www.linkedin.com/', icon_name: 'Linkedin' },
                     { label: 'Email', url: 'mailto:you@example.com', icon_name: 'Mail' },
-                  ]).map((c: any) => {
+                  ]).map((c: ContactLink) => {
                     const Icon = contactIcon(c.icon_name);
                     return (
                       <Link
                         key={c.label}
                         href={c.url}
-                        className="inline-flex h-10 w-10 items-center justify-center border border-black text-black transition-colors hover:bg-[#FF4F00] hover:border-[#FF4F00] hover:text-white"
+                        className="icon-pop inline-flex h-10 w-10 items-center justify-center border border-[var(--border)] text-[var(--foreground)] transition-colors hover:bg-[var(--accent)] hover:border-[var(--accent)] hover:text-white"
                         aria-label={c.label}
                       >
                         <Icon className="h-5 w-5" />
@@ -280,20 +207,19 @@ export default function AboutPageClient({ aboutData, skillsGroups, fallbackInter
                 </div>
               </div>
 
-              {/* Interests */}
-              <div className="border border-black p-3">
-                <h3 className="mb-2 font-header text-2xl uppercase">Interests</h3>
+              <div className="card p-3">
+                <h3 className="mb-2 font-header text-lg lg:text-2xl uppercase">Interests</h3>
                 <div className="grid grid-cols-5 gap-1.5">
-                  {((interests && interests.length > 0) ? interests : fallbackInterests).map((it: any, i: number) => {
+                  {((interests && interests.length > 0) ? interests : fallbackInterests).map((it: Interest, i: number) => {
                     const Icon = toIcon(it.icon_name);
                     return (
                       <div
                         key={`${it.label}-${i}`}
-                        className="flex h-9 w-9 items-center justify-center border border-black/50"
+                        className="flex h-9 w-9 items-center justify-center border border-[var(--border)]/50"
                         style={{ backgroundColor: it.color || '#FFB3BA' }}
                         title={it.label}
                       >
-                        <Icon className="h-4 w-4 text-black" />
+                        <Icon className="h-4 w-4 text-gray-900" />
                       </div>
                     );
                   })}
@@ -301,14 +227,14 @@ export default function AboutPageClient({ aboutData, skillsGroups, fallbackInter
               </div>
             </div>
 
-            {/* Timeline with Click Handler */}
-            <div className="col-span-4 row-span-1 border border-black p-3 flex flex-col">
-              <h2 className="font-header text-4xl uppercase">Career Timeline</h2>
+            {/* Timeline */}
+            <div className="col-span-4 row-span-1 card-elevated p-3 flex flex-col relative">
+              <h2 className="font-header text-2xl lg:text-4xl uppercase">Career Timeline</h2>
               <div className="flex flex-row h-full items-center">
                 <div className="flex-1">
                   <TriBandTimeline
                     startYear={2020}
-                    endYear={2026}
+                    endYear={2027}
                     topSegments={timeline?.top ?? []}
                     bottomSegments={timeline?.bottom ?? []}
                     yearStyle="axis"
@@ -318,31 +244,119 @@ export default function AboutPageClient({ aboutData, skillsGroups, fallbackInter
                   />
                 </div>
               </div>
+              {renderTimelinePopup()}
             </div>
 
             {/* Skills */}
-            <div className="col-span-2 row-span-5 border border-black p-4">
-              <h2 className="mb-3 font-header text-4xl uppercase">Skills</h2>
+            <div className="col-span-2 row-span-5 card-elevated p-4">
+              <h2 className="mb-3 font-header text-2xl lg:text-4xl uppercase">Skills</h2>
               <SkillsAccordion groups={skillsGroups} />
             </div>
 
-            {/* Bio - UPDATED WITH SCROLLBAR */}
-            <div className="col-span-4 row-span-5 border border-black p-4 flex flex-col">
-              <h2 className="mb-2 font-header text-4xl uppercase">Bio</h2>
+            {/* Bio */}
+            <div className="col-span-4 row-span-5 card-elevated p-4 flex flex-col">
+              <h2 className="mb-2 font-header text-2xl lg:text-4xl uppercase">Bio</h2>
               <div className="flex-1 min-h-0 overflow-auto pr-1 vertical-scrollbar">
-                <p className="text-zinc-800 leading-relaxed text-sm font-mono whitespace-pre-line">
+                <p className="text-[var(--foreground)] leading-relaxed text-xs lg:text-sm font-mono whitespace-pre-line">
                   {fullBio}
                 </p>
               </div>
             </div>
           </div>
-
-          {/* Mobile view */}
-          <div className="md:hidden space-y-4">
-            <div className="border border-black p-4">About Me (Mobile)</div>
-          </div>
         </div>
       </section>
+
+      {/* ===== MOBILE LAYOUT ===== */}
+      <div className="md:hidden pt-20 pb-8 px-4 space-y-4">
+        {/* Profile + Name */}
+        <div className="card p-4">
+          <div className="flex items-center gap-4">
+            <div className="relative h-20 w-20 shrink-0 overflow-hidden card">
+              <Image
+                src={profilePhoto}
+                alt={profile?.name ?? 'Profile photo'}
+                fill
+                className="object-cover"
+                sizes="80px"
+              />
+            </div>
+            <div>
+              <h1 className="font-header text-2xl uppercase leading-tight">{profile?.name ?? 'Atulya Mohan'}</h1>
+              <div className="flex items-center gap-2 mt-2">
+                {((contacts && contacts.length > 0) ? contacts : [
+                  { label: 'LinkedIn', url: 'https://www.linkedin.com/', icon_name: 'Linkedin' },
+                  { label: 'Email', url: 'mailto:you@example.com', icon_name: 'Mail' },
+                ]).map((c: ContactLink) => {
+                  const Icon = contactIcon(c.icon_name);
+                  return (
+                    <Link
+                      key={`mobile-${c.label}`}
+                      href={c.url}
+                      className="icon-pop inline-flex h-8 w-8 items-center justify-center border border-[var(--border)] text-[var(--foreground)] transition-colors hover:bg-[var(--accent)] hover:border-[var(--accent)] hover:text-white"
+                      aria-label={c.label}
+                    >
+                      <Icon className="h-4 w-4" />
+                    </Link>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Bio */}
+        <div className="card p-4">
+          <h2 className="mb-2 font-header text-2xl uppercase">Bio</h2>
+          <p className="text-[var(--foreground)] leading-relaxed text-sm font-mono whitespace-pre-line">
+            {fullBio}
+          </p>
+        </div>
+
+        {/* Timeline */}
+        <div className="card p-4 relative">
+          <h2 className="mb-2 font-header text-2xl uppercase">Career Timeline</h2>
+          <div className="h-[160px]">
+            <TriBandTimeline
+              startYear={2020}
+              endYear={2027}
+              topSegments={timeline?.top ?? []}
+              bottomSegments={timeline?.bottom ?? []}
+              yearStyle="axis"
+              pad={16}
+              iconSize={20}
+              rise={30}
+              onSegmentClick={handleSegmentClick}
+            />
+          </div>
+          {renderTimelinePopup()}
+        </div>
+
+        {/* Skills */}
+        <div className="card p-4">
+          <h2 className="mb-3 font-header text-2xl uppercase">Skills</h2>
+          <SkillsAccordion groups={skillsGroups} />
+        </div>
+
+        {/* Interests */}
+        <div className="card p-4">
+          <h2 className="mb-2 font-header text-2xl uppercase">Interests</h2>
+          <div className="flex flex-wrap gap-2">
+            {((interests && interests.length > 0) ? interests : fallbackInterests).map((it: Interest, i: number) => {
+              const Icon = toIcon(it.icon_name);
+              return (
+                <div
+                  key={`mobile-interest-${it.label}-${i}`}
+                  className="flex items-center gap-2 border border-[var(--border)]/50 px-3 py-1.5"
+                  style={{ backgroundColor: it.color || '#FFB3BA' }}
+                >
+                  <Icon className="h-4 w-4 text-gray-900" />
+                  <span className="font-mono text-xs text-gray-900">{it.label}</span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

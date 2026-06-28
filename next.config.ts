@@ -1,31 +1,11 @@
 import type { NextConfig } from 'next';
 
-/** @type {import('next').NextConfig} */
 const nextConfig: NextConfig = {
-  
-  // 👇 ADD (OR UPDATE) THIS 'images' BLOCK
   images: {
-    remotePatterns: [
-      {
-        protocol: 'https',
-        hostname: 'xvyzpsfpgpbozzcohpxa.supabase.co',
-        pathname: '/storage/v1/object/public/**',
-      },
-      {
-        protocol: 'https',
-        hostname: 'xvyzpsfpgpbozzcohpxa.supabase.co',
-        pathname: '/storage/v1/render/image/public/**', // optional but handy
-      },
-    ],
+    formats: ['image/avif', 'image/webp'],
+    deviceSizes: [640, 750, 828, 1080, 1200, 1920],
+    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
   },
-  
-  // 👆 END OF 'images' BLOCK
-
-  eslint: {
-    // This is the block we added earlier
-    ignoreDuringBuilds: true,
-  },
-  
 };
 
 export default nextConfig;

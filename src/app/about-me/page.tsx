@@ -1,25 +1,17 @@
 // src/app/about-me/page.tsx
 
+import type { Metadata } from 'next';
 import { getAboutData } from '@/lib/about/getAboutData';
 import AboutPageClient from './AboutPageClient';
 
-export const runtime = 'nodejs';
+export const metadata: Metadata = {
+  title: 'About Me',
+  description:
+    'Learn about Atulya Mohan — mechanical engineer, product developer, and Carnegie Mellon ETIM graduate. Career timeline, skills, and interests.',
+};
 
-export default async function AboutPage() {
-  let aboutData;
-  try {
-    aboutData = await getAboutData();
-  } catch (error) {
-    console.error('[AboutPage] Error fetching about data:', error);
-    // Return fallback data structure
-    aboutData = {
-      profile: { name: null, bio: null, photoUrl: null },
-      timeline: { top: [], bottom: [] },
-      skills: [],
-      interests: [],
-      contacts: [],
-    };
-  }
+export default function AboutPage() {
+  const aboutData = getAboutData();
   
   const { skills = [] } = aboutData ?? { skills: [] };
 

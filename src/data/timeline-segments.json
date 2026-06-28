@@ -1,0 +1,101 @@
+[
+  {
+    "id": "74ee95c9-8b09-45de-9af0-9da4d106000e",
+    "band": "top",
+    "start_ym": "2020-08",
+    "end_ym": "2024-05",
+    "label": "Purdue University",
+    "sort_index": 0,
+    "created_at": "2025-10-25T15:57:27.013473+00:00",
+    "logo_url": "/images/timeline/purdue.svg",
+    "type": "education"
+  },
+  {
+    "id": "129f2a44-6f9f-4ca3-94ec-25e5a6cf7545",
+    "band": "bottom",
+    "start_ym": "2022-05",
+    "end_ym": "2022-08",
+    "label": "Michelin PRIME",
+    "sort_index": 0,
+    "created_at": "2025-10-25T15:57:27.013473+00:00",
+    "logo_url": "/images/timeline/michelin.svg",
+    "type": "experience"
+  },
+  {
+    "id": "13386349-7e58-4416-8a72-8dd1e79f9b0a",
+    "band": "top",
+    "start_ym": "2025-01",
+    "end_ym": "2025-12",
+    "label": "Carnegie Mellon University",
+    "sort_index": 1,
+    "created_at": "2025-10-25T15:57:27.013473+00:00",
+    "logo_url": "/images/timeline/cmu.png",
+    "type": "education"
+  },
+  {
+    "id": "c62ca77e-9140-4a1e-8e61-afb587753896",
+    "band": "bottom",
+    "start_ym": "2022-05",
+    "end_ym": "2022-08",
+    "label": "Michelin PRIME \u2013 SC",
+    "sort_index": 1,
+    "created_at": "2025-10-18T15:51:50.072156+00:00",
+    "logo_url": "/images/timeline/timeline_c62ca77e-9140-4a1e-8e61-afb587753896.svg",
+    "type": "experience"
+  },
+  {
+    "id": "26a242ad-8128-4ad6-bbef-d2d8bae704e2",
+    "band": "top",
+    "start_ym": "2020-08",
+    "end_ym": "2024-05",
+    "label": "Purdue University (B.S. ME)",
+    "sort_index": 1,
+    "created_at": "2025-10-18T15:51:50.072156+00:00",
+    "logo_url": "/images/timeline/timeline_26a242ad-8128-4ad6-bbef-d2d8bae704e2.svg",
+    "type": "education"
+  },
+  {
+    "id": "fe192491-b2d5-4f88-af63-8fd067202a33",
+    "band": "top",
+    "start_ym": "2025-01",
+    "end_ym": "2025-12",
+    "label": "Carnegie Mellon University (M.S. ETIM)",
+    "sort_index": 2,
+    "created_at": "2025-10-18T15:51:50.072156+00:00",
+    "logo_url": "/images/timeline/timeline_fe192491-b2d5-4f88-af63-8fd067202a33.png",
+    "type": "education"
+  },
+  {
+    "id": "33c5c101-5a0a-4bdc-bbd1-8e1429668a84",
+    "band": "bottom",
+    "start_ym": "2023-05",
+    "end_ym": "2023-12",
+    "label": "BIPL Research \u2013 PU",
+    "sort_index": 2,
+    "created_at": "2025-10-18T15:51:50.072156+00:00",
+    "logo_url": "/images/timeline/timeline_33c5c101-5a0a-4bdc-bbd1-8e1429668a84.svg",
+    "type": "experience"
+  },
+  {
+    "id": "41c6430f-8ef7-4805-9d72-964f9862d8db",
+    "band": "bottom",
+    "start_ym": "2024-09",
+    "end_ym": "2024-12",
+    "label": "Michelin R&D \u2013 India",
+    "sort_index": 3,
+    "created_at": "2025-10-18T15:51:50.072156+00:00",
+    "logo_url": "/images/timeline/timeline_41c6430f-8ef7-4805-9d72-964f9862d8db.svg",
+    "type": "experience"
+  },
+  {
+    "id": "33b8f814-145b-47c2-b7da-d72f3ff15e87",
+    "band": "bottom",
+    "start_ym": "2025-05",
+    "end_ym": "2025-08",
+    "label": "Fourier \u2013 CA",
+    "sort_index": 4,
+    "created_at": "2025-10-18T15:51:50.072156+00:00",
+    "logo_url": "/images/timeline/timeline_33b8f814-145b-47c2-b7da-d72f3ff15e87.svg",
+    "type": "experience"
+  }
+]

@@ -1,0 +1,42 @@
+[
+  {
+    "id": "486909f6-ad0c-45d4-a2aa-9480bbacaaa5",
+    "label": "Music",
+    "icon_name": "Music",
+    "sort_index": 1,
+    "created_at": "2025-10-18T15:51:50.072156+00:00",
+    "color": "#FFB3BA"
+  },
+  {
+    "id": "2c590929-92db-4884-a186-08fdeb7182b2",
+    "label": "Photography",
+    "icon_name": "Camera",
+    "sort_index": 2,
+    "created_at": "2025-10-18T15:51:50.072156+00:00",
+    "color": "#BAFFC9"
+  },
+  {
+    "id": "b2b65e41-a4bd-4891-bd26-0153db3a1711",
+    "label": "Gaming",
+    "icon_name": "Gamepad2",
+    "sort_index": 3,
+    "created_at": "2025-10-18T15:51:50.072156+00:00",
+    "color": "#BAE1FF"
+  },
+  {
+    "id": "b790b5ef-e53e-464b-8c39-e3c15e0a37af",
+    "label": "Travel",
+    "icon_name": "Plane",
+    "sort_index": 4,
+    "created_at": "2025-10-18T15:51:50.072156+00:00",
+    "color": "#FFFFBA"
+  },
+  {
+    "id": "85f1b2c7-8809-4eee-84b1-e0eb7039472c",
+    "label": "Building",
+    "icon_name": "Wrench",
+    "sort_index": 5,
+    "created_at": "2025-10-18T15:51:50.072156+00:00",
+    "color": "#E0BBE4"
+  }
+]

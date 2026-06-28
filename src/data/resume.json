@@ -1,0 +1,120 @@
+{
+  "name": "Atulya Mohan",
+  "title": "Mechanical Engineer & ETIM MS Candidate",
+  "contact": {
+    "email": "mohan.atulya26@gmail.com",
+    "phone": "+1 (848)-264-1381",
+    "linkedin": "linkedin.com/in/atulya-mohan",
+    "website": "atulyamohan.com",
+    "location": "Fremont, California"
+  },
+  "summary": "MS candidate in Engineering & Technology Innovation Management at Carnegie Mellon (GPA: 3.74), complementing a B.S. in Mechanical Engineering from Purdue (GPA: 3.2). Experienced in converting R&D concepts into manufacturable products through hardware design, simulation, prototyping, and data analysis. Demonstrated ability to lead projects, streamline processes, and contribute to technical publications. Seeking roles focused on hardware innovation, product development, and technical strategy in dynamic environments like startups or climate/energy sectors.",
+  "education": [
+    {
+      "institution": "Carnegie Mellon University",
+      "degree": "MS in Engineering & Technology Innovation Management",
+      "dates": "Jan 2025 - Dec 2025",
+      "location": "Pittsburgh, PA",
+      "details": ["GPA: 3.74", "Coursework: Electromechanical Systems Design, Data Science, Quantitative Entrepreneurship, Product Management"]
+    },
+    {
+      "institution": "Purdue University",
+      "degree": "BS in Mechanical Engineering",
+      "dates": "Aug 2020 - May 2024",
+      "location": "West Lafayette, IN",
+      "details": ["GPA: 3.2", "Coursework: Machine Design, Controls, FEA, Statics & Dynamics, Fluid Mechanics, Thermodynamics, Heat & Mass Transfer"]
+    }
+  ],
+  "experience": [
+    {
+      "company": "RoCo Global",
+      "role": "NPI Engineer Intern",
+      "dates": "Jan 2026 - Present",
+      "location": "Pittsburgh, PA",
+      "points": [
+        "Designed and prototyped a custom automated sieve-feeding mechanism in Fusion 360 for clump breakdown of proprietary PU foam powder, increasing manufacturing throughput by 300%.",
+        "Coordinating with three external laboratories to test PU foam-additive cementitious and spray-foam formulations, validating physical properties against applicable ASTM standards."
+      ]
+    },
+    {
+      "company": "Fourier",
+      "role": "Hardware Engineering Intern",
+      "dates": "May 2025 - Aug 2025",
+      "location": "Mountain View, CA",
+      "points": [
+        "Inherited the hydrogen dryer program with zero internal documentation after the lead engineer's departure; conducted temperature-profile and time-to-saturation characterization experiments on the existing PSA dryer, determining that in-situ TSA conversion was infeasible under operating conditions.",
+        "Proposed and built a 3-column dryer architecture using aluminum columns with ex-situ desiccant regeneration to meet a 1.5-month pilot deadline; selected aluminum over stainless steel to reduce fabrication lead time and evaluated molecular sieve versus activated alumina for lower-heat regeneration.",
+        "Validated the pilot-ready dryer on schedule, extending continuous drying time from 4 hours to approximately 30 hours (3.5 days between desiccant replacements); confirmed ex-situ regeneration feasibility, minimizing desiccant waste.",
+        "Authored a comprehensive knowledge transfer document detailing characterization data, design rationale, and recommendations to guide future in-situ regeneration dryer development.",
+        "Designed and built a sheet-metal test stand to evaluate power-supply behavior and troubleshoot I2C communication issues."
+      ]
+    },
+    {
+      "company": "Michelin",
+      "role": "Research & Development Intern",
+      "dates": "Sep 2024 - Dec 2024",
+      "location": "Pune, India",
+      "points": [
+        "Analyzed lab-measured mold geometry, mapped mold codes to production tires and irregular-wear reports, and quantified the contribution of mold geometry to final tire-geometry variation."
+      ]
+    },
+    {
+      "company": "Purdue University (BIPL)",
+      "role": "Undergraduate Research Assistant",
+      "dates": "May 2023 - Dec 2023",
+      "location": "West Lafayette, IN",
+      "points": [
+        "Designed and simulated strain field behavior of 2D dielectric elastomer actuator arrays in Abaqus by mapping temperature to applied voltage with equibiaxial prestretch and thermally coupled elements, leading to a co-authored publication."
+      ]
+    },
+    {
+      "company": "Michelin North America (PRIME)",
+      "role": "Process Quality Engineering Intern",
+      "dates": "May 2022 - Aug 2022",
+      "location": "Greenville, SC",
+      "points": [
+        "Investigated a high-priority scrap defect by inspecting 500+ tires and recording multi-parameter data; designed a go/no-go gauge, iterated 3D-printed prototypes with operator feedback, and drove a 100-unit stainless steel rollout using DFM principles."
+      ]
+    }
+  ],
+  "skills": {
+    "Design & Simulation Tools": ["SOLIDWORKS", "Siemens NX", "Fusion 360", "Abaqus", "COMSOL", "Figma"],
+    "Programming & Data Tools": ["MATLAB", "Python", "Arduino (C++)", "R", "Excel", "Power BI"],
+    "Technical Expertise": ["Controls", "Thermodynamics", "Fluid Mechanics", "Heat Transfer", "FEA", "Machine Design", "DFM/DFA", "GD&T"],
+    "Manufacturing & Prototyping": ["3D Printing", "Rapid Prototyping", "Process Quality Analysis", "Calibration"],
+    "Languages": ["English (Native)", "Hindi (Fluent)"]
+  },
+  "publications": [
+    {
+      "title": "Deep Learning for Strain Field Customization in Bioreactor with Dielectric Elastomer Actuator Array",
+      "authors": "Jue Wang, Dhirodaatto Sarkar, Atulya Mohan",
+      "journal": "Cyborg and Bionic Systems",
+      "date": "Aug 2024",
+      "doi": "10.34133/cbsystems.0155",
+      "href": "https://doi.org/10.34133/cbsystems.0155"
+    }
+  ],
+  "projects": [
+    {
+      "title": "Launch-A-Birdie: Automatic Badminton Shuttlecock Launcher",
+      "dates": "Aug 2025 - Dec 2025",
+      "points": [
+        "Designed and assembled a robotic launcher in Fusion 360, integrating feeding, actuation, and aiming subsystems; wrote Arduino firmware coordinating servo and stepper mechanisms and validated full-system operation through iterative prototype builds."
+      ]
+    },
+    {
+      "title": "Custom PC Case: Sheet Metal Chassis Design & Prototyping",
+      "dates": "Sep 2025",
+      "points": [
+        "Designed a chassis optimized for sheet metal fabrication in Fusion 360 with attention to bend allowances, fastener integration, and internal component clearances; validated fitment via full-scale 3D-printed prototypes applying DFM principles throughout."
+      ]
+    },
+    {
+      "title": "Navigation Device: Wearable Assistive Necklace for the Visually Impaired",
+      "dates": "Jan 2024 - May 2024",
+      "points": [
+        "Led technical design for a wearable necklace integrating 8 ultrasonic sensors, 8 infrared sensors, and 8 haptic motors to relay 360° environmental information; implemented I2C protocol with an Arduino Nano to coordinate all peripherals, reducing device size and wiring complexity."
+      ]
+    }
+  ]
+}

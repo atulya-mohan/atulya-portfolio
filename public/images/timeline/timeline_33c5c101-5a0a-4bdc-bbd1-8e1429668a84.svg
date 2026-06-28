@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" role="img" aria-labelledby="title">
+  <title id="title">Test tube icon</title>
+  <!-- Sides -->
+  <path d="M9 2V16M15 16V2"></path>
+  <!-- Rounded bottom -->
+  <path d="M9 16a3 3 0 0 0 6 0"></path>
+  <!-- Measurement ticks -->
+  <path d="M10 6h2M10 9h2M10 12h2"></path>
+</svg>

@@ -74,8 +74,8 @@ export default function MEProjectsCard({
   return (
     <div
       className={
-        "relative flex h-full min-h-0 flex-col " +
-        "gap-2 border border-black p-4  " +
+        "card-featured relative flex h-full min-h-0 flex-col " +
+        "gap-2 p-4 " +
         className
       }
       style={
@@ -87,28 +87,28 @@ export default function MEProjectsCard({
     >
       {/* 1. Heading */}
       <div className="flex items-center justify-between">
-        <h2 className="font-header text-3xl uppercase text-black">{title}</h2>
+        <h2 className="font-header text-3xl uppercase">{title}</h2>
         <Link
           href={viewAllHref}
           aria-label={`Open all ${title}`}
           title="Open all"
-          className="border border-black bg-transparent p-1.5 text-black transition-colors hover:border-[#FF4F00] hover:bg-[#FF4F00] hover:text-white"
+          className="icon-pop relative border border-[var(--border)] bg-transparent p-1.5 transition-colors after:absolute after:left-1/2 after:top-1/2 after:h-10 after:w-10 after:-translate-x-1/2 after:-translate-y-1/2 after:content-[''] hover:border-[var(--accent)] hover:bg-[var(--accent)] hover:text-white"
         >
           <ArrowUpRight className="h-4 w-4" />
         </Link>
       </div>
 
       {/* 2. Chosen Project (Desc | Photo) */}
-      <section className="grid flex-1 min-h-0 grid-cols-1 items-stretch gap-2 md:grid-cols-2">
-        {/* LEFT: Description */}
-        <div className="flex h-full min-w-0 flex-col border border-black p-4">
+      <section className="grid flex-1 min-h-0 grid-cols-1 items-stretch gap-2 md:grid-cols-[2fr_3fr]">
+        {/* LEFT: Description (40%) */}
+        <div className="flex h-full min-w-0 flex-col border border-[var(--border)] p-4">
           
           {/* 👇 --- THIS IS THE FIX --- 👇 */}
           {/* This <p> tag now has a fixed height (h-[7rem]) and all the
             line-clamp classes, just like your "About Me" box.
             The 'flex-1' class was removed to allow truncation.
           */}
-          <p className="font-body text-sm leading-relaxed text-zinc-800 h-[7rem] overflow-hidden [display:-webkit-box] [-webkit-line-clamp:5] [-webkit-box-orient:vertical]">
+          <p className="font-body text-sm leading-relaxed text-[var(--muted)] h-[7rem] overflow-hidden [display:-webkit-box] [-webkit-line-clamp:5] [-webkit-box-orient:vertical]">
             {cur.summary ??
               "Brief overview of the selected project goes here. Replace with your real content."}
           </p>
@@ -117,35 +117,35 @@ export default function MEProjectsCard({
           <div className="mt-auto flex items-center gap-2 pt-3">
             <button
               onClick={goProject(-1)}
-              className="border-2 border-black px-3 py-1.5 font-mono text-sm text-black transition-colors hover:border-[#FF4F00] hover:bg-[#FF4F00] hover:text-white"
+              className="btn-press border border-[var(--border)] px-4 py-2 font-mono text-xs uppercase tracking-wider transition-colors hover:border-[var(--accent)] hover:bg-[var(--accent)] hover:text-white disabled:opacity-40"
               disabled={isPlaceholder}
             >
-              PREV
+              Prev
             </button>
             <button
               onClick={goProject(1)}
-              className="border-2 border-black px-3 py-1.5 font-mono text-sm text-black transition-colors hover:border-[#FF4F00] hover:bg-[#FF4F00] hover:text-white"
+              className="btn-press border border-[var(--border)] px-4 py-2 font-mono text-xs uppercase tracking-wider transition-colors hover:border-[var(--accent)] hover:bg-[var(--accent)] hover:text-white disabled:opacity-40"
               disabled={isPlaceholder}
             >
-              NEXT
+              Next
             </button>
             <Link
               href={cur.href}
-              className="ml-auto border-2 border-[#FF4F00] bg-[#FF4F00] px-3 py-1.5 font-mono text-sm text-white transition-colors hover:bg-opacity-80"
+              className="btn-press ml-auto border border-[var(--accent)] bg-[var(--accent)] px-4 py-2 font-mono text-xs uppercase tracking-wider text-white transition-colors hover:opacity-90"
             >
-              VIEW PROJECT
+              View Project
             </Link>
           </div>
         </div>
 
         {/* RIGHT: Photo */}
-        <div className="relative h-full min-h-0 overflow-hidden border border-black bg-zinc-200">
+        <div className="relative h-full min-h-0 overflow-hidden border border-[var(--border)] bg-zinc-200">
           {cur.imageUrls && cur.imageUrls[imgIdx] ? (
-            <Image src={cur.imageUrls[imgIdx]} alt={cur.title} fill className="object-cover" />
+            <Image src={cur.imageUrls[imgIdx]} alt={cur.title} fill className="object-cover" sizes="(max-width: 768px) 100vw, 33vw" />
           ) : null}
           
-          <div className="absolute left-0 top-0 z-10 bg-black px-2 py-1">
-            <div className="font-mono text-sm font-medium text-white">
+          <div className="absolute left-0 top-0 z-10 bg-[var(--foreground)] px-2 py-1">
+            <div className="font-mono text-sm font-medium text-[var(--background)]">
               {cur.title}
             </div>
           </div>
@@ -155,14 +155,14 @@ export default function MEProjectsCard({
               <button
                 aria-label="Previous image"
                 onClick={goImage(-1)}
-                className="group absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 p-2 text-white transition-colors hover:bg-[#FF4F00]"
+                className="icon-pop group absolute left-2 top-1/2 grid h-10 w-10 -translate-y-1/2 place-items-center bg-black/50 text-white transition-colors hover:bg-[var(--accent)]"
               >
                 <ChevronLeft className="h-4 w-4" />
               </button>
               <button
                 aria-label="Next image"
                 onClick={goImage(1)}
-                className="group absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 p-2 text-white transition-colors hover:bg-[#FF4F00]"
+                className="icon-pop group absolute right-2 top-1/2 grid h-10 w-10 -translate-y-1/2 place-items-center bg-black/50 text-white transition-colors hover:bg-[var(--accent)]"
               >
                 <ChevronRight className="h-4 w-4" />
               </button>
@@ -184,11 +184,11 @@ export default function MEProjectsCard({
                 onClick={() => setI(idx)}
                 aria-label={`Show ${it.title}`}
                 title={it.title}
-                className="block h-full w-full relative overflow-hidden border border-black bg-zinc-200 transition-all hover:border-2 hover:border-black focus-visible:outline-none focus-visible:border-2 focus-visible:border-black"
+                className="project-thumb block h-full w-full relative overflow-hidden border border-[var(--border)] bg-zinc-200 transition-[border-color,border-width,transform] hover:border-2 hover:border-[var(--accent)] active:scale-[0.96]"
                 disabled={isPlaceholder}
               >
                 {it.imageUrls && it.imageUrls[0] ? (
-                  <Image src={it.imageUrls[0]} alt={it.title} fill className="object-cover" />
+                  <Image src={it.imageUrls[0]} alt={it.title} fill className="object-cover" sizes="(max-width: 768px) 33vw, 15vw" />
                 ) : null}
                 <div className="pointer-events-none absolute left-0 top-0 bg-black/80 px-2 py-0.5">
                   <span className="text-[11px] font-mono font-medium text-white">

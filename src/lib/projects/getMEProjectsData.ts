@@ -1,4 +1,10 @@
-import { supabaseServer } from '../supabase/server';
+import type { MEProjectData, MEProjectImage } from '@/lib/types';
+
+import meProjectsData from '@/data/me-projects.json';
+import meProjectImagesData from '@/data/me-project-images.json';
+
+const projects = meProjectsData as MEProjectData[];
+const images = meProjectImagesData as MEProjectImage[];
 
 export type MEProject = {
   id: string;
@@ -11,38 +17,11 @@ export type MEProject = {
   coverImageUrl: string | null;
 };
 
-export async function getMEProjectsData(): Promise<MEProject[]> {
-  const supabase = supabaseServer();
-
-  if (!supabase) {
-    console.warn('[getMEProjectsData] Supabase client unavailable. Returning empty dataset.');
-    return [];
-  }
-
-  // Projects
-  const { data: projects, error: projectsError } = await supabase
-    .from('me_projects')
-    .select('id, title, role, year, type, blurb, sort_index, cover_image_url')
-    .order('sort_index', { ascending: true });
-
-  if (projectsError) {
-    console.error('Error fetching ME projects:', projectsError);
-    return [];
-  }
-  if (!projects?.length) return [];
-
-  // Images
-  const projectIds = projects.map(p => p.id);
-  const { data: images, error: imagesError } = await supabase
-    .from('me_project_images')
-    .select('project_id, image_url, sort_index')
-    .in('project_id', projectIds)
-    .order('sort_index', { ascending: true });
-
-  if (imagesError) console.error('Error fetching ME project images:', imagesError);
+export function getMEProjectsData(): MEProject[] {
+  if (!projects.length) return [];
 
   const imagesByProject: Record<string, string[]> = {};
-  for (const img of images ?? []) {
+  for (const img of images) {
     (imagesByProject[img.project_id] ??= []).push(img.image_url);
   }
 

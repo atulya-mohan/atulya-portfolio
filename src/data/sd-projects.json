@@ -1,0 +1,38 @@
+[
+  {
+    "id": "2046924d-8b2a-46e5-8aa5-dd10e9811200",
+    "title": "Clubscape",
+    "role": "Co-founder, Product Designer & Developer",
+    "year": "2024-Present",
+    "type": "Startup / Competition Project",
+    "blurb": "Born from a 24-hr Deloitte startup competition, Clubscape is a personalized discovery platform to help students find clubs and events. We aim to replace chance with a \"Tinder for clubs\" matching algorithm to enhance campus life.",
+    "sort_index": 10,
+    "created_at": "2025-11-11T03:51:24.599325+00:00",
+    "updated_at": "2025-11-11T03:51:24.599325+00:00",
+    "tech_stack": [
+      "React Native",
+      "Supabase",
+      "Expo",
+      "TypeScript",
+      "Figma",
+      "Framer"
+    ],
+    "status": "Building MVP",
+    "problem": "Students struggle to discover niche clubs amidst information overload. Finding the right community often relies on luck rather than passion. Org leaders also lack effective tools to reach interested members at scale without spamming general channels.",
+    "solution": "A mobile-first platform featuring a personalized, \"Tinder for clubs\" matching algorithm. This is coupled with lightweight broadcast and event management tools for organization leaders to enhance campus community engagement.",
+    "key_features": [
+      "Algorithmic \"Tinder for clubs\" Feed",
+      "Club & Event Discovery",
+      "Event RSVP & Management",
+      "Targeted Org Broadcasts",
+      "Figma Prototype",
+      "React Native MVP"
+    ],
+    "links": {
+      "live": "https://fun-result-779059.framer.app/",
+      "figma": "YOUR_FIGMA_LINK_HERE",
+      "github": null
+    },
+    "cover_image_url": "/images/sd-projects/clubscape-cover.jpg"
+  }
+]

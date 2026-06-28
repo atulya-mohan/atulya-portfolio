@@ -38,7 +38,6 @@ export default function EMShowcase({
   const n = Math.max(projects.length, 1);
   const cur = projects[idx % n];
 
-  // Courses grouped with their projects (titles only)
   const byCourse = useMemo(() => {
     const map = new Map<number, { course: Course; projects: Project[] }>();
     for (const c of courses) map.set(c.id, { course: c, projects: [] });
@@ -47,7 +46,6 @@ export default function EMShowcase({
         map.get(p.course_id)!.projects.push(p);
       }
     }
-    // keep original course order
     return courses.map((c) => map.get(c.id)!).filter(Boolean);
   }, [courses, projects]);
 
@@ -55,18 +53,13 @@ export default function EMShowcase({
     setIdx((x) => (x + dir + n) % n);
 
   return (
-    <div
-      className="
-        grid h-full min-w-0 grid-rows-12 gap-4
-        rounded-2xl border border-white/10 bg-white/5 p-4
-      "
-    >
-      {/* Row 1: Title inside card */}
+    <div className="grid h-full min-w-0 grid-rows-12 gap-3 border border-[var(--border)] bg-[var(--card-bg)] p-4">
+      {/* Row 1: Title */}
       <div className="row-span-1 flex items-center justify-between">
-        <h2 className="text-xl font-semibold text-white">Featured</h2>
+        <h2 className="font-header text-xl uppercase">Featured</h2>
         <button
           aria-label="Open project"
-          className="rounded-full border border-white/10 bg-white/10 p-1.5 text-slate-100 hover:bg-white/15"
+          className="icon-pop relative border border-[var(--border)] bg-transparent p-1.5 transition-colors after:absolute after:left-1/2 after:top-1/2 after:h-10 after:w-10 after:-translate-x-1/2 after:-translate-y-1/2 after:content-[''] hover:border-[var(--accent)] hover:bg-[var(--accent)] hover:text-white"
           onClick={(e) => e.preventDefault()}
         >
           <ArrowUpRight className="h-4 w-4" />
@@ -74,53 +67,42 @@ export default function EMShowcase({
       </div>
 
       {/* Rows 2..9: Split layout */}
-      <div className="row-span-8 grid min-h-0 grid-cols-2 gap-4">
-        {/* LEFT: Program context + courses list (scrolls internally if long) */}
-        <aside className="flex min-h-0 flex-col rounded-2xl border border-white/10 bg-white/5 p-4">
+      <div className="row-span-8 grid min-h-0 grid-cols-2 gap-3">
+        {/* LEFT: Courses list */}
+        <aside className="flex min-h-0 flex-col border border-[var(--border)] p-4">
           <div className="mb-2 flex items-baseline justify-between">
-            <h3 className="text-base font-semibold text-white">Program</h3>
-            <span className="text-xs text-slate-300/80">CMU • ETIM</span>
+            <h3 className="font-header text-base uppercase">Program</h3>
+            <span className="text-xs font-mono text-[var(--muted)]">CMU / ETIM</span>
           </div>
 
-          <div className="mb-3 text-sm text-slate-300/90">
+          <p className="mb-3 text-sm text-[var(--muted)]">
             Course-anchored overview of Engineering Management projects.
-          </div>
+          </p>
 
-          <div className="mt-1 flex-1 overflow-auto pr-2
-              [scrollbar-width:thin] [scrollbar-color:rgba(255,255,255,.28)_transparent]
-              [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-transparent
-              [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-white/20
-              hover:[&::-webkit-scrollbar-thumb]:bg-white/30
-          ">
+          <div className="mt-1 flex-1 overflow-auto pr-2 content-scrollbar">
             {byCourse.length ? (
               <ul className="space-y-3">
-                {byCourse.map(({ course, projects }) => (
-                  <li
-                    key={course.id}
-                    className="rounded-xl border border-white/10 bg-white/5 p-3"
-                  >
+                {byCourse.map(({ course, projects: courseProjects }) => (
+                  <li key={course.id} className="border border-[var(--border)] p-3">
                     <div className="mb-1 flex items-center justify-between">
-                      <p className="text-sm font-medium text-white">
-                        {course.name}
-                      </p>
-                      <span className="text-[10px] text-slate-300/80">
+                      <p className="text-sm font-mono font-bold">{course.name}</p>
+                      <span className="text-[10px] font-mono text-[var(--muted)]">
                         {course.term ?? ""} {course.year ?? ""}
                       </span>
                     </div>
-                    {/* project links (titles only) */}
                     <div className="flex flex-wrap gap-2">
-                      {projects.length ? (
-                        projects.map((p) => (
+                      {courseProjects.length ? (
+                        courseProjects.map((p) => (
                           <button
                             key={p.id}
                             onClick={() =>
                               setIdx(Math.max(0, projectsIndexOf(projects, p.id)))
                             }
                             className={
-                              "rounded-lg border px-2 py-1 text-xs transition " +
+                              "border px-2 py-1 text-xs font-mono transition-[color,background-color,border-color,transform] active:scale-[0.96] " +
                               (p.id === cur.id
-                                ? "border-white/40 bg-white/15 text-white"
-                                : "border-white/10 bg-white/5 text-slate-200 hover:bg-white/10")
+                                ? "border-[var(--accent)] bg-[var(--accent)] text-white"
+                                : "border-[var(--border)] hover:border-[var(--accent)] hover:bg-[var(--accent)] hover:text-white")
                             }
                             title={p.title}
                           >
@@ -128,101 +110,86 @@ export default function EMShowcase({
                           </button>
                         ))
                       ) : (
-                        <span className="text-xs text-slate-400">
-                          (no projects linked)
-                        </span>
+                        <span className="text-xs text-[var(--muted)]">(no projects linked)</span>
                       )}
                     </div>
                   </li>
                 ))}
               </ul>
             ) : (
-              <div className="rounded-xl border border-white/10 bg-white/5 p-3 text-sm text-slate-300/90">
-                Add EM courses in Supabase to populate this panel.
+              <div className="border border-[var(--border)] p-3 text-sm text-[var(--muted)]">
+                No courses linked yet.
               </div>
             )}
           </div>
         </aside>
 
-        {/* RIGHT: Featured project (image + quick facts + summary) */}
-        <section className="relative min-h-0 rounded-2xl border border-white/10 bg-white/5 p-3">
-          <div className="relative h-full w-full overflow-hidden rounded-xl border border-white/10 bg-white/10">
-            {/* Image (cover) */}
+        {/* RIGHT: Featured project image */}
+        <section className="relative min-h-0 border border-[var(--border)] p-3">
+          <div className="relative h-full w-full overflow-hidden border border-[var(--border)] bg-zinc-200">
             {cur?.cover_image_url ? (
               <Image
                 src={cur.cover_image_url}
                 alt={cur.title}
                 fill
                 className="object-cover"
+                sizes="(max-width: 768px) 50vw, 33vw"
               />
             ) : (
-              <div className="absolute inset-0 bg-white/10" />
+              <div className="absolute inset-0 bg-zinc-200" />
             )}
 
-            {/* Legibility gradient + overlay title chip */}
-            <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/35 via-black/10 to-transparent" />
-            <div className="pointer-events-none absolute left-3 top-3 z-10">
-              <span className="rounded-md bg-black/60 px-2 py-1 text-xs font-semibold text-white shadow-[0_0_6px_rgba(0,0,0,0.35)]">
-                {cur?.title}
-              </span>
+            <div className="pointer-events-none absolute left-0 top-0 z-10 bg-[var(--foreground)] px-2 py-1">
+              <span className="font-mono text-xs font-medium text-[var(--background)]">{cur?.title}</span>
             </div>
 
-            {/* Quick pills (role/year/type) pinned bottom-left */}
-            <div className="absolute bottom-3 left-3 z-10 flex flex-wrap gap-1">
+            <div className="absolute bottom-0 left-0 z-10 flex flex-wrap gap-1 p-2">
               {cur?.role && <Pill>{cur.role}</Pill>}
               {cur?.year != null && <Pill>{String(cur.year)}</Pill>}
               {cur?.type && <Pill>{cur.type}</Pill>}
             </div>
 
-            {/* Prev/Next within EM list */}
             {n > 1 && (
               <>
                 <button
                   onClick={go(-1)}
-                  className="absolute left-3 top-1/2 -translate-y-1/2 rounded-full border border-white/25 bg-black/40 p-1 backdrop-blur-md opacity-90 hover:opacity-100"
+                  className="icon-pop absolute left-2 top-1/2 grid h-10 w-10 -translate-y-1/2 place-items-center bg-black/50 text-white transition-colors hover:bg-[var(--accent)]"
                   aria-label="Previous project"
                 >
-                  <ChevronLeft className="h-5 w-5 text-white" />
+                  <ChevronLeft className="h-4 w-4" />
                 </button>
                 <button
                   onClick={go(1)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full border border-white/25 bg-black/40 p-1 backdrop-blur-md opacity-90 hover:opacity-100"
+                  className="icon-pop absolute right-2 top-1/2 grid h-10 w-10 -translate-y-1/2 place-items-center bg-black/50 text-white transition-colors hover:bg-[var(--accent)]"
                   aria-label="Next project"
                 >
-                  <ChevronRight className="h-5 w-5 text-white" />
+                  <ChevronRight className="h-4 w-4" />
                 </button>
               </>
             )}
           </div>
 
-          {/* Summary strip below the image, but still inside this right column */}
-          <div className="mt-3 rounded-md border border-white/10 bg-white/5 px-3 py-2">
-            <p className="line-clamp-3 text-sm text-slate-200/90">
+          <div className="mt-2 border border-[var(--border)] px-3 py-2">
+            <p className="line-clamp-3 text-sm font-body text-[var(--muted)]">
               {cur?.summary ?? "Short description for the selected project."}
             </p>
           </div>
         </section>
       </div>
 
-      {/* Rows 10..12: Bottom horizontal title-only scroller */}
-      <div className="row-span-3 rounded-2xl border border-white/10 bg-white/5 p-3 min-w-0 overflow-hidden">
-        <div className="group/strip h-full w-full overflow-x-auto overflow-y-hidden scroll-smooth
-            [scrollbar-width:none] [&::-webkit-scrollbar]:h-2
-            [&::-webkit-scrollbar-thumb]:bg-transparent
-            [&::-webkit-scrollbar-thumb]:rounded-full
-            group-hover/strip:[&::-webkit-scrollbar-thumb]:bg-white/30
-          "
-        >
+      {/* Bottom scroller */}
+      <div className="row-span-3 border border-[var(--border)] p-3 min-w-0 overflow-hidden">
+        <div className="h-full w-full overflow-x-auto overflow-y-hidden scroll-smooth content-scrollbar">
           <div className="inline-flex h-full items-center gap-2 pr-2">
             {projects.map((p, i) => (
               <button
                 key={p.id}
                 onClick={() => setIdx(i)}
                 className={
-                  "shrink-0 rounded-xl border px-3 py-2 text-sm transition " +
+                  "shrink-0 border px-3 py-2 text-sm font-mono transition-[color,background-color,border-color,transform] active:scale-[0.96] " +
                   (i === idx
-                    ? "border-white/40 bg-white/15 text-white"
-                    : "border-white/10 bg-white/5 text-slate-200 hover:bg-white/10")
+                    ? "border-[var(--accent)] bg-[var(--accent)] text-white"
+                    : "border-[var(--border)] hover:border-[var(--accent)] hover:bg-[var(--accent)] hover:text-white")
                 }
                 title={p.title}
               >
@@ -238,7 +205,7 @@ export default function EMShowcase({
 
 function Pill({ children }: { children: React.ReactNode }) {
   return (
-    <span className="inline-flex items-center rounded-lg border border-white/20 bg-black/40 px-2 py-0.5 text-[11px] text-white backdrop-blur-sm">
+    <span className="inline-flex items-center border border-[var(--border-light)] bg-black/60 px-2 py-0.5 text-[11px] font-mono text-white">
       {children}
     </span>
   );

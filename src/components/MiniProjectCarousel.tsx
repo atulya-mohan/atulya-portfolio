@@ -4,7 +4,6 @@ import Link from "next/link";
 import { useState } from "react";
 import Image from "next/image";
 
-// Added 'null' to imageUrl to match Supabase schema
 type Item = { title: string; href: string; imageUrl?: string | null };
 
 export default function MiniProjectCarousel({
@@ -17,12 +16,12 @@ export default function MiniProjectCarousel({
   // If items is empty, render a placeholder and stop.
   if (!items || items.length === 0) {
     return (
-      <div className={`relative h-full overflow-hidden border border-black bg-zinc-200 ${className}`}>
+      <div className={`relative h-full overflow-hidden border border-[var(--border)] bg-zinc-200 ${className}`}>
         <div className="flex h-full w-full items-center justify-center">
-          <p className="font-mono text-xs text-zinc-500">No projects found.</p>
+          <p className="font-mono text-xs text-[var(--muted)]">No projects found.</p>
         </div>
-        <div className="absolute bottom-0 left-0 right-0 z-20 bg-black p-4">
-          <h3 className="font-header text-lg uppercase text-white">
+        <div className="absolute bottom-0 left-0 right-0 z-20 bg-[var(--foreground)] p-4">
+          <h3 className="font-header text-lg uppercase text-[var(--background)]">
             Coming Soon
           </h3>
         </div>
@@ -47,7 +46,7 @@ export default function MiniProjectCarousel({
 
   return (
     // ADDED the class
-    <div className={`relative h-full overflow-hidden border border-black  ${className}`}>
+    <div className={`relative h-full overflow-hidden border border-[var(--border)]  ${className}`}>
       {/* Click anywhere to go to current project */}
       <Link href={cur.href} className="absolute inset-0 z-10" />
 
@@ -72,8 +71,8 @@ export default function MiniProjectCarousel({
         )}
       </div>
 
-      <div className="absolute bottom-0 left-0 right-0 z-20 bg-black p-4">
-        <h3 className="font-header text-lg uppercase text-white">
+      <div className="absolute bottom-0 left-0 right-0 z-20 bg-[var(--foreground)] p-4">
+        <h3 className="font-header text-lg uppercase text-[var(--background)]">
           {cur.title}
         </h3>
       </div>
@@ -84,14 +83,14 @@ export default function MiniProjectCarousel({
           <button
             aria-label="Previous project"
             onClick={prev}
-            className="absolute left-2 top-1/2 z-30 -translate-y-1/2 bg-black/50 p-2 text-white transition-colors hover:bg-[#FF4F00]"
+            className="absolute left-2 top-1/2 z-30 -translate-y-1/2 flex min-h-10 min-w-10 items-center justify-center bg-black/50 p-2 text-white transition-colors hover:bg-[var(--accent)] icon-pop"
           >
             <Chevron dir="left" />
           </button>
           <button
             aria-label="Next project"
             onClick={next}
-            className="absolute right-2 top-1/2 z-30 -translate-y-1/2 bg-black/50 p-2 text-white transition-colors hover:bg-[#FF4F00]"
+            className="absolute right-2 top-1/2 z-30 -translate-y-1/2 flex min-h-10 min-w-10 items-center justify-center bg-black/50 p-2 text-white transition-colors hover:bg-[var(--accent)] icon-pop"
           >
             <Chevron dir="right" />
           </button>

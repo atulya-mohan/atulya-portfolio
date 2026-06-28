@@ -1,0 +1,456 @@
+[
+  {
+    "id": "fc5632d0-35f5-4b0a-8182-0276946a5eaa",
+    "title": "Repurposing End-of-Life EV Batteries for Micro-Mobility",
+    "role": "Project Manager & Lead Analyst (Production & Market)",
+    "year": "2025",
+    "type": "Course Project",
+    "blurb": "A feasibility study on using automated disassembly to repurpose end-of-life EV batteries for seated electric scooters, analyzing production costs, market demand, and overall viability.",
+    "sort_index": 0,
+    "created_at": "2025-11-10T04:32:43.840295+00:00",
+    "updated_at": "2025-11-10T04:32:43.840295+00:00",
+    "course_id": null,
+    "cover_image_url": "/images/em-projects/repurposing-end-of-life-ev-batteries-for-micro-mobility-cover.jpg",
+    "confidential": false,
+    "modules": [
+      "problem",
+      "executive_snapshot",
+      "jtbd",
+      "decision_table",
+      "current_status"
+    ],
+    "outcomes": [
+      "Automation adds only $0.04/unit vs. manual at 50,000 packs/year",
+      "Repurposed scooters captured 65-91% of simulated market share",
+      "Identified labor and equipment as primary cost drivers",
+      "High consumer price sensitivity (WTP +$42 for range, +$32 for new)"
+    ],
+    "theme": "Quantitative Entrepreneurship",
+    "problem_users": "Evaluated the feasibility of using automated disassembly to repurpose end-of-life (EoL) EV batteries for micro-mobility. This addresses the high cost of new batteries and consumer concerns about the performance of reused components.",
+    "jtbd": [
+      "Provide longer-range micro-mobility options at an affordable price.",
+      "Offer a sustainable, eco-conscious option using second-life technologies.",
+      "Create an economical battery replacement path for high-end scooter owners."
+    ],
+    "hypotheses": null,
+    "mvp_in": null,
+    "mvp_later": null,
+    "current_status": "Final recommendations include: 1) Automating the initial battery pack safety assessment to reduce labor costs; 2) Targeting the high-performance market where price-to-performance is key; and 3) Scaling to >100,000 units to achieve economies of scale.",
+    "exec_snapshot": [
+      "Disassembly Process: Modeled the 4-stage, 36-sub-step disassembly flow for Chevy Bolt battery packs. This process breaks the pack down to the cell level for health assessment and sorting.",
+      "Production Cost Model: Developed a process-based cost model comparing manual vs. automated disassembly. At 50,000 packs/year, the automated unit cost ($0.95) is nearly identical to manual ($0.91), with labor and equipment as the primary cost drivers.",
+      "Market & Demand Analysis: Conducted an MNL model analysis showing high price sensitivity. While consumers are willing to pay more for new batteries (+$32) and range (+$42), the lower price of repurposed scooters allowed them to capture 65-91% of the simulated market.",
+      "Key Decisions Modeled: Analyzed the economic impact of key strategic choices, including the battery pack origin, the level of disassembly (module vs. cell), and the degree of automation."
+    ],
+    "decision_criteria": [
+      {
+        "name": "Battery Pack Origin",
+        "weight": "The make and model of the donor vehicle. Assumed to impact acquisition cost and final product pricing."
+      },
+      {
+        "name": "Level of Disassembly",
+        "weight": "Disassembling to the cell-level (vs. module) allows for cell sorting, which could enable higher performance and warranties for the final product."
+      },
+      {
+        "name": "Degree of Automation",
+        "weight": "The key economic trade-off: too little automation doesn't reduce labor costs, while excessive automation leads to prohibitively high equipment costs."
+      }
+    ],
+    "rd_enablers": null,
+    "rd_frictions": null,
+    "rd_takeaways": null,
+    "rd_timeline": null,
+    "ipod_thesis": null,
+    "ipod_levers": null,
+    "ipod_kpis": null,
+    "ipod_insight": null,
+    "pm_persona": null
+  },
+  {
+    "id": "2f485df8-752c-40f5-97c8-9c2aff8a2b6f",
+    "title": "Context: A Strategy for Relationship Management",
+    "role": "Product Lead & Designer",
+    "year": "2025",
+    "type": "Course Project",
+    "blurb": "Led product strategy and design for \"Context,\" an AI-powered app to deepen relationships. Responsible for defining the Jobs-to-be-Done (JTBD), prototyping the app in Figma, and designing the go-to-market strategy and pitch deck.",
+    "sort_index": 1,
+    "created_at": "2025-10-21T00:13:54.91156+00:00",
+    "updated_at": "2025-10-21T00:13:54.91156+00:00",
+    "course_id": null,
+    "cover_image_url": "/images/em-projects/context-a-strategy-for-relationship-management-cover.jpg",
+    "confidential": false,
+    "modules": [
+      "problem",
+      "jtbd",
+      "mvp_scope",
+      "decision_table",
+      "executive_snapshot"
+    ],
+    "outcomes": null,
+    "theme": "Strategy & Product Management",
+    "problem_users": "Busy students and young professionals struggle to maintain meaningful connections, as existing social platforms prioritize expanding connection counts over deepening relationship quality. [cite: 163-164, 204, 313]",
+    "jtbd": [
+      "Maintain important relationships (personal and professional) without losing touch. [cite: 165, 267]",
+      "Remember important details about people (birthdays, interests) to make catching up easier. [cite: 270]",
+      "Follow up on past conversations seamlessly without feeling awkward. [cite: 272]",
+      "Manage professional networks with a mini-portfolio and contextual reminders. [cite: 171-175, 292-297]"
+    ],
+    "hypotheses": null,
+    "mvp_in": [
+      "End-to-End Encrypted Messaging",
+      "Recording and storing of interactions and text conversations",
+      "Categorization of contacts (family, close friends, professional)",
+      "Periodic reminders to reach out with summaries of past conversations",
+      "Reminders to respond to missed messages (a la Spark)"
+    ],
+    "mvp_later": [
+      "Digital scrapbook of shared experiences (a la Snapchat memories)",
+      "AI-driven suggestions for new experiences based on mutual interests",
+      "AI agent to automatically book experiences for participants"
+    ],
+    "current_status": null,
+    "exec_snapshot": [
+      "Market Positioning: Defined the market opportunity (TAM: 217M, SAM: 31.5M) [cite: 277-282] and created a 2x2 competitive analysis to position Context in the High-Automation / Deep-Relationship quadrant, a clear gap in the market. [cite: 1897-1911]",
+      "Go-to-Market Strategy: Designed a freemium business model with premium ($10) and business ($30) tiers [cite: 285, 1877-1880], projecting $28.35M in revenue from a 3.15M user SOM. [cite: 283-284, 1883-1885]",
+      "Brand & Design: Led product ideation, prototyped the app in Figma, and designed the pitch deck. Created a brand vision focused on alleviating the \"loneliness epidemic\" by strengthening existing connections. [cite: 204, 313, 1846]"
+    ],
+    "decision_criteria": [
+      {
+        "name": "Google Calendar",
+        "weight": "Widely adopted but lacks relationship depth."
+      },
+      {
+        "name": "Cloze",
+        "weight": "AI-powered CRM but complex and business-focused."
+      },
+      {
+        "name": "Snapchat/Instagram",
+        "weight": "High engagement but no structured tracking or automation."
+      },
+      {
+        "name": "Paper Planners",
+        "weight": "Fully custom but 100% manual with no automation."
+      }
+    ],
+    "rd_enablers": null,
+    "rd_frictions": null,
+    "rd_takeaways": null,
+    "rd_timeline": null,
+    "ipod_thesis": null,
+    "ipod_levers": null,
+    "ipod_kpis": null,
+    "ipod_insight": null,
+    "pm_persona": null
+  },
+  {
+    "id": "ee3d19f9-022d-4b23-af62-637af52515cd",
+    "title": "Project Management Essentials",
+    "role": "Individual",
+    "year": "2024",
+    "type": "Course • Team",
+    "blurb": "Developed a complete product plan for \"Context,\" an AI-powered relationship manager. Responsible for the problem definition, market sizing, target personas, competitive analysis, and solution design.",
+    "sort_index": 2,
+    "created_at": "2025-10-20T23:44:44.497547+00:00",
+    "updated_at": "2025-10-20T23:44:44.497547+00:00",
+    "course_id": null,
+    "cover_image_url": "/images/em-projects/project-management-essentials-cover.png",
+    "confidential": false,
+    "modules": [
+      "problem",
+      "jtbd",
+      "decision_table",
+      "persona",
+      "mvp_scope"
+    ],
+    "outcomes": [
+      "On-time delivery (+1 wk buffer)",
+      "Clear decision rights"
+    ],
+    "theme": "pm_essentials",
+    "problem_users": "Due to busy schedules and excessive distractions, graduate students forget to contact close friends at a rate of 50% per month. This results in approximately 76.8 million close friends being forgotten or left without contact by their close friends every year.",
+    "jtbd": [
+      "Maintain personal and professional relationships.",
+      "Improve networking for future opportunities.",
+      "Remember important details about people (birthdays, family, interests).",
+      "Stay in contact naturally without feeling pushed.",
+      "Easily follow up on the last conversation."
+    ],
+    "hypotheses": null,
+    "mvp_in": [
+      "Relationship Categorization (family, close friends, friends)",
+      "Automated digital scrapbook (manual input evolves to automated)",
+      "Automated Context Tracking & Reminders (birthdays, conversation summaries)",
+      "Location Sharing (a la Find My)",
+      "AI-guided text suggestions",
+      "AI-driven suggestions for new shared experiences"
+    ],
+    "mvp_later": null,
+    "current_status": null,
+    "exec_snapshot": null,
+    "decision_criteria": [
+      {
+        "name": "Manual Methods (Calendars)",
+        "weight": "High ease of use, but zero automation and no integration."
+      },
+      {
+        "name": "Social Media (Facebook/Snap)",
+        "weight": "Good for reminders, but designed for broad sharing, not deep relationship maintenance."
+      },
+      {
+        "name": "Cloze (CRM)",
+        "weight": "Intelligent and automated, but overly business-oriented and not intuitive for personal use."
+      }
+    ],
+    "rd_enablers": null,
+    "rd_frictions": null,
+    "rd_takeaways": null,
+    "rd_timeline": null,
+    "ipod_thesis": null,
+    "ipod_levers": null,
+    "ipod_kpis": null,
+    "ipod_insight": null,
+    "pm_persona": [
+      "Social Connectors: Highly engaged undergraduates, early adopters. (Est. 10M actors)",
+      "Disconnected Undergraduates: Less engaged, early majority, value relationships but fall behind. (Est. 6M actors)",
+      "Busy Grad Professionals: Moderately engaged (struggle to keep up), early majority. (Est. 2.6M actors)"
+    ]
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440100",
+    "title": "GoMo - Social Journaling App",
+    "role": "Product Designer & Researcher",
+    "year": "2023",
+    "type": "Social Platform",
+    "blurb": "A gratitude-focused social platform using piggyback prototyping to validate strong-tie network dynamics and authentic moment-sharing behavior among close friends and family.",
+    "sort_index": 3,
+    "created_at": "2025-11-10T02:36:00.328406+00:00",
+    "updated_at": "2025-11-10T02:36:00.328406+00:00",
+    "course_id": "550e8400-e29b-41d4-a716-446655440001",
+    "cover_image_url": "/images/em-projects/gomo-social-journaling-app-cover.png",
+    "confidential": false,
+    "modules": [
+      "problem",
+      "jtbd",
+      "hypotheses",
+      "mvp_scope",
+      "executive_snapshot",
+      "current_status"
+    ],
+    "outcomes": [
+      "PIGGYBACK PROTOTYPE",
+      "STRONG-TIE NETWORK",
+      "ZONE 2→3",
+      "~40 USERS",
+      "GRATITUDE INTERVENTION"
+    ],
+    "theme": "research",
+    "problem_users": "College students struggle to maintain consistent, meaningful connections with loved ones amid academic stress. Existing social platforms prioritize curated aesthetics over authenticity, creating barriers to genuine vulnerability. Research shows gratitude interventions can reduce anxiety and depression while increasing positive emotions (Diniz et al., 2022), yet no platform explicitly cultivates gratitude within close-tie networks.",
+    "jtbd": [
+      "Practice daily gratitude to improve mental health and shift focus toward positive moments",
+      "Share authentic, unfiltered moments with close friends and family without aesthetic pressure",
+      "Strengthen existing strong-tie relationships through consistent, low-friction touchpoints",
+      "Create a private archive of positive memories to revisit and reflect on over time",
+      "Feel social accountability to contribute without the performative nature of public feeds"
+    ],
+    "hypotheses": [
+      "If we limit connections to 10 people (strong ties only), users will feel comfortable sharing authentic, non-curated moments",
+      "If we make reactions and comments private between poster and viewer, users will engage more honestly and meaningfully",
+      "If we send daily push notifications with varied prompts, users will develop a consistent posting habit",
+      "If we remove public profile feeds and ranking algorithms, users will move from lurkers to active contributors",
+      "If we provide weekly recap collages, users will experience tangible value from their participation and maintain long-term engagement"
+    ],
+    "mvp_in": [
+      "Daily prompt-based posting with photo/text support",
+      "10-person connection limit (Inner Circle)",
+      "Private reactions and comments",
+      "Chronological feed (no algorithmic ranking)",
+      "Push notification reminders at randomized times",
+      "Personal moment archive (My Moments)",
+      "Weekly scrapbook/collage recap"
+    ],
+    "mvp_later": [
+      "AI-optimized notification timing using regression models",
+      "Streaks, badges, and reward systems for consistency",
+      "Group functionality for different friend circles",
+      "Photo upload shortcuts and prioritization",
+      "Gratitude garden gamification for long-term engagement",
+      "Advanced analytics on posting patterns and mental health correlation"
+    ],
+    "current_status": "Working prototype launched with ~40 users across 4 test cohorts (10 users per team member). Piggyback prototyping via text message validated core hypotheses: notifications successfully prompted contributions, users shared big events organically, and weekly recaps were highly valued. Currently onboarding beta users to web platform (Next.js + Supabase + Vercel). Iterating on prompt specificity and photo-sharing friction based on prototype learnings.",
+    "exec_snapshot": [
+      "Project Zone: Started in Zone 2 (15-20 users, AI-assisted build), pivoted to Zone 3 (full technical feasibility with AI-coded prototype)",
+      "Piggyback Method: Used text messaging as existing platform to simulate GoMo dynamics without building full system—validated notifications, posting behavior, and social accountability",
+      "Key Finding: Low-friction strong-tie environment succeeded in encouraging authentic contributions, but prompts need more specificity to elicit small daily moments vs. only big events",
+      "Technical Stack: Next.js (React), Tailwind CSS, shadcn/ui, Supabase (auth + database), Vercel (deployment + cron for notifications)",
+      "Unique Positioning: Few social journaling apps target close-tie groups with explicit gratitude cultivation—differentiator in crowded social media landscape"
+    ],
+    "decision_criteria": [
+      {
+        "name": "Sociotechnical Systems",
+        "weight": "Technical features (chronological feed, private reactions) reinforce social norms of authenticity"
+      },
+      {
+        "name": "Contribution Pyramid",
+        "weight": "Strong-tie network + private interactions designed to move users from lurkers to active contributors"
+      },
+      {
+        "name": "Intrinsic vs. Extrinsic Motivation",
+        "weight": "Balance personal gratitude practice (intrinsic) with FOMO/streaks (extrinsic) for optimal engagement"
+      },
+      {
+        "name": "Social Influence",
+        "weight": "Seeing friends positive moments encourages mindfulness and positivity in own life"
+      },
+      {
+        "name": "Descriptive vs. Injunctive Norms",
+        "weight": "Bright colors, example posts, zero-tolerance policy, and daily prompts establish what/how to share"
+      },
+      {
+        "name": "Gemeinschaft",
+        "weight": "Platform designed for community, connection, and shared purpose over transactional Gesellschaft interactions"
+      }
+    ],
+    "rd_enablers": null,
+    "rd_frictions": null,
+    "rd_takeaways": null,
+    "rd_timeline": null,
+    "ipod_thesis": null,
+    "ipod_levers": null,
+    "ipod_kpis": null,
+    "ipod_insight": null,
+    "pm_persona": null
+  },
+  {
+    "id": "f9d11067-0a6f-474f-9dae-bbaf3e7aeccf",
+    "title": "R&D Management – Origin Story of a Real Innovation",
+    "role": "Individual",
+    "year": "2024",
+    "type": "Seminar • Case Study",
+    "blurb": "Analyzed organizational dynamics that enabled successful innovation. Documented inflection points from discovery through breakthrough. Synthesized lessons on org design, incentives, and governance cadences that enabled breakthrough results.",
+    "sort_index": 4,
+    "created_at": "2025-10-21T00:13:54.91156+00:00",
+    "updated_at": "2025-10-21T00:13:54.91156+00:00",
+    "course_id": null,
+    "cover_image_url": "/images/em-projects/r-d-management-origin-story-of-a-real-innovation-cover.png",
+    "confidential": false,
+    "modules": [
+      "timeline",
+      "org_enablers",
+      "constraints_frictions",
+      "takeaways"
+    ],
+    "outcomes": [
+      "Case study published",
+      "4 org lessons extracted"
+    ],
+    "theme": "randd",
+    "problem_users": "Founded by a Harvard student-athlete who didn't know what was happening to his body during training. Athletes often overtrain and overlook recovery, but lack insight into how their body responds, leading them to push beyond safe limits. The goal was continuous human-body monitoring to prevent this outcome.",
+    "jtbd": null,
+    "hypotheses": null,
+    "mvp_in": null,
+    "mvp_later": null,
+    "current_status": null,
+    "exec_snapshot": null,
+    "decision_criteria": null,
+    "rd_enablers": [
+      "Incubation at Harvard Innovation Labs provided access to experts, recruiting, and testing.",
+      "High-profile advisory board (e.g., LeBron James's trainer) kept product decisions focused on real athlete needs.",
+      "Strategic partnerships with NCAA programs for pre-launch validation and data collection.",
+      "Small, centralized founding team with in-house expertise across sports science, software, and hardware.",
+      "Proactive IP strategy, filing 3 core patents on recovery scoring and hardware before consumer launch."
+    ],
+    "rd_frictions": [
+      "High Technical Risk: Significant uncertainty whether wrist-based PPG could accurately and consistently measure HRV.",
+      "Design Constraint: The device had to be 'invisible' (no screen, 24/7 wear), forcing all insights and complexity into the app.",
+      "Narrow Market: Initial focus on elite athletes narrowed the addressable base and required a later pivot to general consumers."
+    ],
+    "rd_takeaways": "The key lesson was to target a high-value B2B beachhead (elite athletes) first to build credibility, data, and reference customers before a consumer launch. This mitigates high technical risk (like wrist-based HRV) by using structured, real-world pilots (NCAA teams) to build evidence and reduce uncertainty. The durable advantage was not the sensor, but the full pipeline that turned raw signals into actionable, daily insights.",
+    "rd_timeline": [
+      {
+        "name": "2012",
+        "weight": "Founded at Harvard Innovation Labs; initial R&D on continuous HRV monitoring."
+      },
+      {
+        "name": "2014-2015",
+        "weight": "Core patents filed; validated product with NCAA pilots to prove usefulness."
+      },
+      {
+        "name": "Sept 2015",
+        "weight": "Raised $12M Series B; launched B2B 'team-only' product to build credibility."
+      },
+      {
+        "name": "July 2016",
+        "weight": "Launched WHOOP 1.0 to the public consumer market."
+      }
+    ],
+    "ipod_thesis": null,
+    "ipod_levers": null,
+    "ipod_kpis": null,
+    "ipod_insight": null,
+    "pm_persona": null
+  },
+  {
+    "id": "fdd0a6b3-e901-4174-9099-2a41eae8a3e5",
+    "title": "ETIM Seminar – Apple iPod Report",
+    "role": "Individual",
+    "year": "2024",
+    "type": "Seminar • Case Brief",
+    "blurb": "Synthesized iPod's strategic success through hardware-software integration. Mapped three strategic levers: ecosystem lock-in, design excellence, and distribution innovation. Quantified before/after market impact and competitive defensibility.",
+    "sort_index": 5,
+    "created_at": "2025-10-21T00:13:54.91156+00:00",
+    "updated_at": "2025-10-21T00:13:54.91156+00:00",
+    "course_id": null,
+    "cover_image_url": "/images/em-projects/etim-seminar-apple-ipod-report-cover.jpg",
+    "confidential": false,
+    "modules": [
+      "case_thesis",
+      "strategic_levers",
+      "before_after_kpis",
+      "key_insight"
+    ],
+    "outcomes": [
+      "Market share: 3% → 78%",
+      "ASP increase: +45%"
+    ],
+    "theme": "seminar",
+    "problem_users": null,
+    "jtbd": null,
+    "hypotheses": null,
+    "mvp_in": null,
+    "mvp_later": null,
+    "current_status": null,
+    "exec_snapshot": null,
+    "decision_criteria": null,
+    "rd_enablers": null,
+    "rd_frictions": null,
+    "rd_takeaways": null,
+    "rd_timeline": null,
+    "ipod_thesis": "Apple revolutionized portable music by recognizing a gap for a simple, elegant device. The iPod succeeded not just as a product, but as a perfectly integrated hardware (iPod) and software (iTunes) ecosystem.",
+    "ipod_levers": [
+      "Design & Simplicity: A \"less is more\" approach focused on the core JTBD: \"1,000 songs in your pocket.\" This included the innovative and intuitive click wheel.",
+      "Hardware/Software Ecosystem: iTunes provided a legal \"middle ground\" for digital music, while the iPod provided the hardware. This closed system created a seamless user experience that competitors couldn't match.",
+      "Operational Excellence: Tim Cook's supply chain mastery allowed Apple to drive down per-unit costs, while the launch of Apple Stores created a powerful new distribution and marketing channel.",
+      "Organizational Culture: A flat, collaborative structure with \"no silos\" and \"concurrent engineering\" allowed design, hardware, and software teams to work simultaneously, enabling an 8-month development cycle."
+    ],
+    "ipod_kpis": [
+      {
+        "name": "Initial Sales (2001)",
+        "weight": "25,000 units (Slow start)"
+      },
+      {
+        "name": "Digital Music Market Share",
+        "weight": "iTunes owned 70% of the digital retail space."
+      },
+      {
+        "name": "Computer Market Share (at time)",
+        "weight": "Only 5% (Mac-only was a huge risk)."
+      },
+      {
+        "name": "Development Timeline",
+        "weight": "8 months (From idea to shelves)"
+      }
+    ],
+    "ipod_insight": "The iPod's success was not just the device itself, but the creation of Apple's famous closed ecosystem. The combination of iTunes (a legal digital store) and the iPod (a simple, beautiful device) created a user experience that competitors could not replicate.",
+    "pm_persona": null
+  }
+]

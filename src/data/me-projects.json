@@ -1,0 +1,74 @@
+[
+  {
+    "id": "b7be27b6-db30-4b8f-9238-338b63e99030",
+    "title": "Navigation Device for Visually Impaired",
+    "role": "Technical Lead",
+    "year": "2024",
+    "type": "Academic • Group",
+    "blurb": "As technical lead on a six-person Purdue senior design team, I built an assistive necklace that gives visually impaired users 360° spatial awareness through haptic feedback. Eight enclosures ring the necklace, each pairing an infrared time-of-flight sensor (8 m range) with an ultrasonic sensor for close objects; their readings fuse via RMS to drive a dedicated ERM vibration motor. I designed the full device in CAD, wrote the firmware that ties every component together, and built the logic mapping distance to vibration intensity. The proof: wearing it, we navigated our building blindfolded.",
+    "sort_index": 0,
+    "created_at": "2025-10-18T22:46:02.246342+00:00",
+    "updated_at": "2025-10-18T22:46:02.246342+00:00",
+    "cover_image_url": "/images/me-projects/navigation-device-for-visually-impaired-cover.jpg"
+  },
+  {
+    "id": "e66764fe-9a73-40af-97d0-a9651a5dd77f",
+    "title": "Badminton Shot Trainer",
+    "role": "Mechatronics Lead",
+    "year": "2025",
+    "type": "Academic • Group",
+    "blurb": "A badminton training machine that drills players against real shot types: serve, smash, and more. The player picks a shot on a touchscreen, and the trainer sets its flywheel speed and launch angle to fire shuttlecocks at the matching velocity and trajectory, cycling through feed and launch for continuous practice. On a five-person team, I owned the feeding and storage subsystem (28-shuttlecock capacity, feeding one every 2-3 seconds), led subsystem integration, selected the electronics, programmed the touchscreen controls, and wrote all the firmware. The flywheels reach 15,000 rpm, and the completed build is documented with updated CAD and a demo video.",
+    "sort_index": 1,
+    "created_at": "2025-10-18T22:46:02.246342+00:00",
+    "updated_at": "2025-10-18T22:46:02.246342+00:00",
+    "cover_image_url": "/images/me-projects/badminton-shot-trainer-cover.png"
+  },
+  {
+    "id": "8fa93eb5-8855-4cbd-a5e9-52c4795c940f",
+    "title": "Custom PC Case",
+    "role": "Design Engineer",
+    "year": "2025",
+    "type": "Passion Project • Solo",
+    "blurb": "A custom PC case I'm designing in stainless steel sheet metal as a personal project, built around one goal: make it cheap to fabricate and quick to assemble. I modeled the full case in Fusion 360, designed the panels around sheet-metal fabrication constraints, and verified every bend for manufacturability. Because I can't fund a full metal prototype yet, I 3D-printed key parts to check fit and assembly in the real world. The CAD is complete and validated; the build is paused until I can send the files to a manufacturer.",
+    "sort_index": 2,
+    "created_at": "2025-10-18T22:46:02.246342+00:00",
+    "updated_at": "2025-10-18T22:46:02.246342+00:00",
+    "cover_image_url": "/images/me-projects/custom-pc-case-cover.png"
+  },
+  {
+    "id": "347641f5-5145-490e-9d66-58b8bfc0d496",
+    "title": "Automatic Mask Dispenser",
+    "role": "Mechanical Designer",
+    "year": "2022",
+    "type": "Academic • Group",
+    "blurb": "A touchless automatic mask dispenser built for COVID-era entrances: it drops a single mask the moment a PIR sensor detects a hand. For my sophomore mechanical engineering class, I worked on a four-person team and owned the housing, modeling the body in CAD, applying DFM principles for wood fabrication, and running stress analysis on the wall-mounting joints. We took it to a fully working physical prototype and demonstrated it at the sophomore design showcase.",
+    "sort_index": 3,
+    "created_at": "2025-10-18T22:46:02.246342+00:00",
+    "updated_at": "2025-10-18T22:46:02.246342+00:00",
+    "cover_image_url": "/images/me-projects/automatic-mask-dispenser-cover.png"
+  },
+  {
+    "id": "cf00ab52-a625-449a-b3c8-28435cbbbbe5",
+    "title": "Cycloidal Gearbox",
+    "role": "Mechanical Designer",
+    "year": "2023",
+    "type": "Academic • Group",
+    "blurb": "A two-week competition in my machine design lab: every team got the same motor and battery and had to build a gearbox, within a fixed size limit, that spun an attached turbine as slowly as possible. Highest gear ratio wins. On a three-person team, I co-designed and 3D-printed a multi-stage cycloidal gearbox, iterating rapidly to work around the printer's tolerance limits. Ours reached a 1:1,115,136 reduction packed into a 5×5×5 cm cube, the highest gear ratio in the class. We won.",
+    "sort_index": 4,
+    "created_at": "2025-10-19T19:34:38.338834+00:00",
+    "updated_at": "2025-10-19T19:34:38.338834+00:00",
+    "cover_image_url": "/images/me-projects/cycloidal-gearbox-cover.svg"
+  },
+  {
+    "id": "055d2816-8c46-43f5-a27c-d2970474227e",
+    "title": "Folding Bicycle",
+    "role": "Mechanical Designer",
+    "year": "2019 / 2026",
+    "type": "Academic • Solo",
+    "blurb": "For my high school senior design project, I designed a folding bicycle that rides like a full-size bike yet folds into a compact form that's easy to wheel alongside you. I taught myself Fusion 360 to run the full product lifecycle: market and user research, ergonomics, anthropometry, and a documented justification for every design decision. I built an early CAD model and a bare-bones physical prototype, and I'm now rebuilding both the CAD model and the physical bike from the ground up (2026).",
+    "sort_index": 5,
+    "created_at": "2025-10-18T22:46:02.246342+00:00",
+    "updated_at": "2025-10-18T22:46:02.246342+00:00",
+    "cover_image_url": "/images/me-projects/folding-bicycle-cover.jpg"
+  }
+]

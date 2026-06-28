@@ -1,0 +1,34 @@
+[
+  {
+    "id": "4b8d525c-8d3f-4aeb-bb3b-de91a3e4d0a0",
+    "project_id": "2046924d-8b2a-46e5-8aa5-dd10e9811200",
+    "image_url": "/images/sd-projects/clubscape-1.jpg",
+    "sort_index": 0,
+    "created_at": "2025-11-11T04:15:32.622408+00:00",
+    "label": "Student Home (Updated)"
+  },
+  {
+    "id": "aef239de-ec0b-4646-aa10-d7100b48e360",
+    "project_id": "2046924d-8b2a-46e5-8aa5-dd10e9811200",
+    "image_url": "/images/sd-projects/clubscape-2.jpg",
+    "sort_index": 1,
+    "created_at": "2025-11-11T04:15:32.622408+00:00",
+    "label": "Club Home"
+  },
+  {
+    "id": "432cac7f-068b-45a7-82c5-1726895f9f05",
+    "project_id": "2046924d-8b2a-46e5-8aa5-dd10e9811200",
+    "image_url": "/images/sd-projects/clubscape-3.jpg",
+    "sort_index": 2,
+    "created_at": "2025-11-11T04:15:32.622408+00:00",
+    "label": "Student Club Bookmarks"
+  },
+  {
+    "id": "5c092a38-5c67-4f54-a7e1-2b2ff38eacd3",
+    "project_id": "2046924d-8b2a-46e5-8aa5-dd10e9811200",
+    "image_url": "/images/sd-projects/clubscape-4.jpg",
+    "sort_index": 3,
+    "created_at": "2025-11-11T04:15:32.622408+00:00",
+    "label": "Student Registered Clubs"
+  }
+]

@@ -1,6 +1,6 @@
 {
   "name": "Atulya Mohan",
-  "title": "Mechanical Engineer & ETIM MS Candidate",
+  "title": "Mechanical Engineer",
   "contact": {
     "email": "mohan.atulya26@gmail.com",
     "phone": "+1 (848)-264-1381",
@@ -8,32 +8,41 @@
     "website": "atulyamohan.com",
     "location": "Fremont, California"
   },
-  "summary": "MS candidate in Engineering & Technology Innovation Management at Carnegie Mellon (GPA: 3.74), complementing a B.S. in Mechanical Engineering from Purdue (GPA: 3.2). Experienced in converting R&D concepts into manufacturable products through hardware design, simulation, prototyping, and data analysis. Demonstrated ability to lead projects, streamline processes, and contribute to technical publications. Seeking roles focused on hardware innovation, product development, and technical strategy in dynamic environments like startups or climate/energy sectors.",
+  "summary": "MS in Engineering & Technology Innovation Management from Carnegie Mellon, complementing a B.S. in Mechanical Engineering from Purdue. Experienced in converting R&D concepts into manufacturable products through hardware design, simulation, prototyping, and data analysis. Demonstrated ability to lead projects, streamline processes, and contribute to technical publications. Most recently at Pebble Mobility until the role was eliminated in a company-wide restructuring; now seeking roles focused on hardware innovation, product development, and technical strategy in dynamic environments like startups or climate/energy sectors.",
   "education": [
     {
       "institution": "Carnegie Mellon University",
       "degree": "MS in Engineering & Technology Innovation Management",
       "dates": "Jan 2025 - Dec 2025",
       "location": "Pittsburgh, PA",
-      "details": ["GPA: 3.74", "Coursework: Electromechanical Systems Design, Data Science, Quantitative Entrepreneurship, Product Management"]
+      "details": ["Coursework: Electromechanical Systems Design, Data Science, Product Management, Quantitative Entrepreneurship"]
     },
     {
       "institution": "Purdue University",
       "degree": "BS in Mechanical Engineering",
       "dates": "Aug 2020 - May 2024",
       "location": "West Lafayette, IN",
-      "details": ["GPA: 3.2", "Coursework: Machine Design, Controls, FEA, Statics & Dynamics, Fluid Mechanics, Thermodynamics, Heat & Mass Transfer"]
+      "details": ["Coursework: Machine Design, Controls, FEA, Statics & Dynamics, Heat & Mass Transfer, Thermodynamics, Fluid Mechanics"]
     }
   ],
   "experience": [
     {
+      "company": "Pebble Mobility",
+      "role": "Plumbing & Fluid Systems Engineer",
+      "dates": "Jun 2026 - Jul 2026",
+      "location": "Fremont, CA",
+      "points": [
+        "Led cost-reduction efforts on the existing fluid and plumbing systems; position eliminated in a company-wide restructuring."
+      ]
+    },
+    {
       "company": "RoCo Global",
       "role": "NPI Engineer Intern",
-      "dates": "Jan 2026 - Present",
+      "dates": "Jan 2026 - May 2026",
       "location": "Pittsburgh, PA",
       "points": [
         "Designed and prototyped a custom automated sieve-feeding mechanism in Fusion 360 for clump breakdown of proprietary PU foam powder, increasing manufacturing throughput by 300%.",
-        "Coordinating with three external laboratories to test PU foam-additive cementitious and spray-foam formulations, validating physical properties against applicable ASTM standards."
+        "Coordinated three external laboratories validating PU foam-additive formulations against applicable ASTM standards."
       ]
     },
     {
@@ -42,11 +51,12 @@
       "dates": "May 2025 - Aug 2025",
       "location": "Mountain View, CA",
       "points": [
-        "Inherited the hydrogen dryer program with zero internal documentation after the lead engineer's departure; conducted temperature-profile and time-to-saturation characterization experiments on the existing PSA dryer, determining that in-situ TSA conversion was infeasible under operating conditions.",
-        "Proposed and built a 3-column dryer architecture using aluminum columns with ex-situ desiccant regeneration to meet a 1.5-month pilot deadline; selected aluminum over stainless steel to reduce fabrication lead time and evaluated molecular sieve versus activated alumina for lower-heat regeneration.",
-        "Validated the pilot-ready dryer on schedule, extending continuous drying time from 4 hours to approximately 30 hours (3.5 days between desiccant replacements); confirmed ex-situ regeneration feasibility, minimizing desiccant waste.",
-        "Authored a comprehensive knowledge transfer document detailing characterization data, design rationale, and recommendations to guide future in-situ regeneration dryer development.",
-        "Designed and built a sheet-metal test stand to evaluate power-supply behavior and troubleshoot I2C communication issues."
+        "Took over an undocumented hydrogen dryer program with a senior engineer and one other intern after its lead departed, running temperature-profile, time-to-temperature, and time-to-saturation experiments to reconstruct its behavior.",
+        "With pressure-swing adsorption ruled out by the system's operating conditions, modified the unit toward temperature-swing by re-specifying O-rings, adding PID-controlled heating tapes, and revising insulation and sensor layout; stabilized erratic dew-point readings, then showed the existing design could not support in-situ regeneration.",
+        "Co-proposed the pilot architecture the team built: three off-the-shelf aluminum columns with ex-situ desiccant regeneration, replacing the PSA unit's stainless steel, with embrittlement judged an acceptable risk over a 1.5-month pilot.",
+        "Delivered and validated the pilot dryer with the team, extending continuous drying from 6 to 30 hours and pushing desiccant replacement out to once every 3.5 days; co-authored the program's only knowledge-transfer document.",
+        "Designed and built a sheet-metal test stand to evaluate power-supply behavior and troubleshoot I2C faults.",
+        "Designed leak-mitigating open-tray housings for electrolyzer stacks with drainage slopes, protective geometry, and Sorbothane feet for vibration damping and insulation, iterating the design through 3D-printed prototypes."
       ]
     },
     {
@@ -55,7 +65,7 @@
       "dates": "Sep 2024 - Dec 2024",
       "location": "Pune, India",
       "points": [
-        "Analyzed lab-measured mold geometry, mapped mold codes to production tires and irregular-wear reports, and quantified the contribution of mold geometry to final tire-geometry variation."
+        "Mapped lab-measured mold geometry to production tires and irregular-wear reports, quantifying how variation in mold roundness drove long-term wear on truck tires."
       ]
     },
     {
@@ -64,7 +74,7 @@
       "dates": "May 2023 - Dec 2023",
       "location": "West Lafayette, IN",
       "points": [
-        "Designed and simulated strain field behavior of 2D dielectric elastomer actuator arrays in Abaqus by mapping temperature to applied voltage with equibiaxial prestretch and thermally coupled elements, leading to a co-authored publication."
+        "Designed and simulated a 9 × 9 dielectric elastomer actuator array in Abaqus under 100% equibiaxial prestretch, mapping temperature to applied voltage on thermally coupled elements; ran the voltage sweep that generated the 10,000-case strain-field dataset used to train the array's deep-learning controller."
       ]
     },
     {
@@ -73,22 +83,22 @@
       "dates": "May 2022 - Aug 2022",
       "location": "Greenville, SC",
       "points": [
-        "Investigated a high-priority scrap defect by inspecting 500+ tires and recording multi-parameter data; designed a go/no-go gauge, iterated 3D-printed prototypes with operator feedback, and drove a 100-unit stainless steel rollout using DFM principles."
+        "Investigated a high-priority scrap defect by inspecting 500+ tires and recording multi-parameter data; designed a go/no-go gauge, iterated 3D-printed prototypes with operator feedback, and drove a 100-unit stainless steel rollout applying DFM."
       ]
     }
   ],
   "skills": {
     "Design & Simulation Tools": ["SOLIDWORKS", "Siemens NX", "Fusion 360", "Abaqus", "COMSOL", "Figma"],
     "Programming & Data Tools": ["MATLAB", "Python", "Arduino (C++)", "R", "Excel", "Power BI"],
-    "Technical Expertise": ["Controls", "Thermodynamics", "Fluid Mechanics", "Heat Transfer", "FEA", "Machine Design", "DFM/DFA", "GD&T"],
-    "Manufacturing & Prototyping": ["3D Printing", "Rapid Prototyping", "Process Quality Analysis", "Calibration"],
+    "Technical Expertise": ["Controls", "Thermodynamics", "Fluid Mechanics", "Heat Transfer", "FEA", "Machine Design", "DFM/DFMA", "GD&T"],
+    "Manufacturing & Prototyping": ["3D Printing", "Sheet Metal Design & Fabrication", "Rapid Prototyping", "ASTM Test Standards", "Process Quality Analysis", "Calibration"],
     "Languages": ["English (Native)", "Hindi (Fluent)"]
   },
   "publications": [
     {
       "title": "Deep Learning for Strain Field Customization in Bioreactor with Dielectric Elastomer Actuator Array",
-      "authors": "Jue Wang, Dhirodaatto Sarkar, Atulya Mohan",
-      "journal": "Cyborg and Bionic Systems",
+      "authors": "Wang J., Sarkar D., Mohan A., Lee M., Ma Z., Chortos A.",
+      "journal": "Cyborg and Bionic Systems (Science Partner Journal, AAAS)",
       "date": "Aug 2024",
       "doi": "10.34133/cbsystems.0155",
       "href": "https://doi.org/10.34133/cbsystems.0155"
@@ -99,7 +109,7 @@
       "title": "Launch-A-Birdie: Automatic Badminton Shuttlecock Launcher",
       "dates": "Aug 2025 - Dec 2025",
       "points": [
-        "Designed and assembled a robotic launcher in Fusion 360, integrating feeding, actuation, and aiming subsystems; wrote Arduino firmware coordinating servo and stepper mechanisms and validated full-system operation through iterative prototype builds."
+        "Designed and assembled a robotic launcher in Fusion 360, integrating feeding, actuation, and aiming subsystems; wrote Arduino firmware coordinating servo and stepper mechanisms, validated through iterative prototype builds."
       ]
     },
     {

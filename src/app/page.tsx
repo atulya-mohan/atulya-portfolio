@@ -89,7 +89,7 @@ export default function Home() {
 
         <div className="absolute bottom-0 left-0 px-6 pb-8 md:px-12 md:pb-12 lg:px-20">
           <p className="font-body text-base text-white/90 max-w-md leading-relaxed mb-4">
-            I design hardware, manage engineering teams, and build software on the side.
+            I design hardware, prototype fast, and build software on the side.
           </p>
           <div className="flex items-center gap-3">
             {aboutData.contacts.map((contact) => {
